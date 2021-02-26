@@ -1,16 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import Text from '../components/Text'
 import { UserContext } from '../context/UserContext';
 import { FirebaseContext } from '../context/FireBaseContext';
+import * as actions from '../redux/actions'
 
 
-const Terrain = ({ date, hour, field, reservationsParHourParField, reservedLimitExceed }) => {
+const Terrain = ({ date, hour, field, reservationsParHourParField }) => {
     const [user, setUser] = useContext(UserContext);
     const [playersOnField, setPlayersOnField] = useState([]);
     const [alreadyRegistred, setAlreadyRegistred] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useDispatch()
+    const nombreReservations = useSelector(state => state.nombreReservations)
+
 
     const firebase = useContext(FirebaseContext);
 
@@ -41,6 +47,7 @@ const Terrain = ({ date, hour, field, reservationsParHourParField, reservedLimit
                 }
                 setPlayersOnField(prevState => [...prevState, player])
                 setAlreadyRegistred(true)
+                dispatch(actions.IncrementNombreReservations())
             }
         }
 
@@ -54,6 +61,7 @@ const Terrain = ({ date, hour, field, reservationsParHourParField, reservedLimit
             else {
                 setPlayersOnField(prevState => prevState.filter(reservation => reservation.joueurId !== user.uid))
                 setAlreadyRegistred(false)
+                dispatch(actions.DecrementNombreReservations())
             }
         }
 
@@ -65,14 +73,14 @@ const Terrain = ({ date, hour, field, reservationsParHourParField, reservedLimit
 
             <TitreTerrain
                 onPress={() => onReservationPress()}
-                color={alreadyRegistred ? "#34A853" : reservedLimitExceed ? "#EA4335" : null}
-                disabled={isLoading || (reservedLimitExceed && !alreadyRegistred)}
+                color={alreadyRegistred ? "#34A853" : nombreReservations ? "#EA4335" : null}
+                disabled={isLoading}
             >
                 {isLoading ?
                     (
                         <Loading />
                     ) : (
-                        <Text center medium color={alreadyRegistred || reservedLimitExceed ? "white" : null}>Terrain {field}</Text>
+                        <Text center medium color={alreadyRegistred || nombreReservations ? "white" : null}>Terrain {field}</Text>
                     )
                 }
             </TitreTerrain>

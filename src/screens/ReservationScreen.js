@@ -2,17 +2,23 @@ import React, { useState, useContext } from 'react'
 import styled from 'styled-components'
 import Text from '../components/Text'
 import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import Creneau from '../components/Creneau'
+import { UserContext } from '../context/UserContext';
+import * as actions from '../redux/actions'
 
 
 const ReservationScreen = () => {
+    const [user, setUser] = useContext(UserContext);
     const [selectedDate, setSelectedDate] = useState();
     const [loading, setLoading] = useState(false);
     const [creneaux, setCreneaux] = useState([]);
     const firebase = useContext(FirebaseContext);
-
+    const dispatch = useDispatch()
+    const nombreReservations = useSelector(state => state.nombreReservations)
 
     const minHour = 8;
     const maxHour = 21;
@@ -26,6 +32,14 @@ const ReservationScreen = () => {
 
         //Récupération des réservations de la journée
         const reservations = await firebase.getReservations(dateSelected.dateString)
+
+
+        //Compte du nombre de réservations effectuées dans la journée: 
+        if (reservations) {
+            dispatch(actions.SetNombreReservations(reservations.filter(reservation => reservation.joueurId === user.uid).length))
+        }
+        else
+            dispatch(actions.SetNombreReservations(0))
 
         //Création des créneaux
         //Réinit
@@ -70,6 +84,9 @@ const ReservationScreen = () => {
                 selectedDate &&
                 <>
                     <Text center large>Créneaux le {selectedDate}</Text>
+                    {
+                        nombreReservations >= 2 && <Text center medium color={"red"}>Limite de réservations du jour atteinte</Text>
+                    }
                     {
                         loading ?
                             <Loading />

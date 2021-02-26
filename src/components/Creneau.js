@@ -13,6 +13,7 @@ const Creneau = ({ date, hour, reservationsParHour }) => {
     //Création des terrains
     useEffect(() => {
         setLoading(true)
+
         setTerrains([])
         for (let terrain = 1; terrain <= nombreTerrain; terrain++) {
             const terrain =
