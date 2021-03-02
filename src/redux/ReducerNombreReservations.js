@@ -10,11 +10,11 @@ export function ReducerNombreReservations(state = initialState, action) {
             return nextState || state;
 
         case "IncrementNombreReservations":
-            nextState = { ...state, nombreReservations: state.nombreReservations++ };
+            nextState = { ...state, nombreReservations: state.nombreReservations + 1 };
             return nextState || state;
 
         case "DecrementNombreReservations":
-            nextState = { ...state, nombreReservations: state.nombreReservations-- };
+            nextState = { ...state, nombreReservations: state.nombreReservations - 1 };
             return nextState || state;
 
         default:

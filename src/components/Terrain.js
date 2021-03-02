@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Text from '../components/Text'
 import { UserContext } from '../context/UserContext';
@@ -70,20 +69,32 @@ const Terrain = ({ date, hour, field, reservationsParHourParField }) => {
 
     return (
         <Container>
+            {
+                reservationsParHourParField && reservationsParHourParField.length >= 6 && !alreadyRegistred ?
+                    <TitreTerrain
+                        color={"#EA4335"}
+                        disabled
+                    >
 
-            <TitreTerrain
-                onPress={() => onReservationPress()}
-                color={alreadyRegistred ? "#34A853" : nombreReservations ? "#EA4335" : null}
-                disabled={isLoading}
-            >
-                {isLoading ?
-                    (
-                        <Loading />
-                    ) : (
-                        <Text center medium color={alreadyRegistred || nombreReservations ? "white" : null}>Terrain {field}</Text>
-                    )
-                }
-            </TitreTerrain>
+                        <Text center medium color={"white"}>Complet</Text>
+
+                    </TitreTerrain>
+                    :
+                    <TitreTerrain
+                        onPress={() => onReservationPress()}
+                        color={alreadyRegistred ? "#34A853" : nombreReservations >= 2 ? "#EA4335" : null}
+                        disabled={isLoading || !alreadyRegistred && nombreReservations >= 2}
+                    >
+                        {isLoading ?
+                            (
+                                <Loading />
+                            ) : (
+                                <Text center medium color={alreadyRegistred || nombreReservations >= 2 ? "white" : null}>Terrain {field}</Text>
+                            )
+                        }
+                    </TitreTerrain>
+            }
+
 
             {playersOnField &&
                 playersOnField.map(element =>

@@ -9,14 +9,14 @@ import Store from './src/redux/Store'
 
 export default App = () => {
   return (
-    <FirebaseProvider>
-      <Provider store={Store}>
+    <Provider store={Store}>
+      <FirebaseProvider>
         <UserProvider>
           <NavigationContainer>
             <AppStackScreens />
           </NavigationContainer>
         </UserProvider>
-      </Provider>
-    </FirebaseProvider>
+      </FirebaseProvider>
+    </Provider>
   )
 }

@@ -2,8 +2,7 @@ import React, { useState, useContext } from 'react'
 import styled from 'styled-components'
 import Text from '../components/Text'
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import Creneau from '../components/Creneau'
@@ -52,7 +51,6 @@ const ReservationScreen = () => {
                 reservationsParHour={reservations ? reservations.filter(element => element.heure == hour) : null}
             />
             setCreneaux(prevState => [...prevState, creneau])
-
         }
 
         setLoading(false);
@@ -103,7 +101,8 @@ const ReservationScreen = () => {
     )
 }
 
-export default ReservationScreen
+
+export default (ReservationScreen)
 
 LocaleConfig.locales['fr'] = {
     monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],

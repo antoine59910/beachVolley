@@ -37,9 +37,9 @@ const Creneau = ({ date, hour, reservationsParHour }) => {
     return (
         <Item>
             <ReservationHeader>
-                <Ionicons name="time-outline" size={40} />
+
                 <Hour>
-                    <Text center large>{`${hour}h00 - ${hour + 1}h00`}</Text>
+                    <Text center large><Ionicons name="time-outline" size={25} />{`${hour}h00 - ${hour + 1}h00`}</Text>
                 </Hour>
             </ReservationHeader>
             <ReservationBody>
