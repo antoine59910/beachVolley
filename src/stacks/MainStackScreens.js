@@ -1,11 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons'
 
+import { UserContext } from '../context/UserContext';
+
 import ReservationScreen from '../screens/ReservationScreen'
 import ProfileScreen from '../screens/ProfileScreen'
+import AdminStackScreens from './AdminStackScreens'
+
 
 export default MainStackScreens = () => {
+    const [user, setUser] = useContext(UserContext);
     const MainStack = createBottomTabNavigator()
 
     const tabBarOptions = {
@@ -38,6 +43,10 @@ export default MainStackScreens = () => {
         <MainStack.Navigator tabBarOptions={tabBarOptions} screenOptions={screenOptions}>
             <MainStack.Screen name="Reservation" component={ReservationScreen} />
             <MainStack.Screen name="Profile" component={ProfileScreen} />
+            {
+                user.authorization === "administrator" &&
+                <MainStack.Screen name="Administrator" component={AdminStackScreens} />
+            }
         </MainStack.Navigator>
     )
 

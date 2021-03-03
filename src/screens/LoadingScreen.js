@@ -25,7 +25,8 @@ const LoadingScreen = () => {
                     email: userInfo.email,
                     uid: user.uid,
                     username: userInfo.username,
-                    profilPhotoUrl: userInfo.profilPhotoUrl
+                    profilPhotoUrl: userInfo.profilPhotoUrl,
+                    authorization: userInfo.authorization,
                 })
             }
             else {

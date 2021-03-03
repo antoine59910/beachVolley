@@ -22,7 +22,7 @@ const SignInScreen = ({ navigation }) => {
         try {
             await firebase.signIn(email, password);
 
-            const uid = firebase.getCurrentUser().uid;
+            const uid = await firebase.getCurrentUser().uid;
 
             const userInfo = await firebase.getUserInfo(uid);
 
@@ -32,7 +32,7 @@ const SignInScreen = ({ navigation }) => {
                 uid,
                 profilePhotoUrl: userInfo.profilePhotoUrl,
                 isLoggedIn: true,
-
+                authorization: userInfo.authorization,
             })
 
         } catch (error) {

@@ -31,7 +31,8 @@ const Firebase = {
             await db.collection('users').doc(uid).set({
                 username: user.username,
                 email: user.email,
-                profilePhotoUrl
+                profilePhotoUrl,
+                uid,
             })
             if (user.profilePhoto) {
                 profilePhotoUrl = await Firebase.uploadProfiltePhoto(user.profilePhoto)
@@ -95,6 +96,28 @@ const Firebase = {
         }
     },
 
+    getUsers: async () => {
+        let users = [];
+
+        try {
+            const snapshot = await db.collection("users").get();
+
+            if (snapshot.empty) {
+                return null;
+            }
+
+            snapshot.forEach(user => {
+                users.push(user.data())
+            }
+            )
+
+            return users;
+
+        } catch (error) {
+            console.log('Error @getUsers : ', error)
+        }
+    },
+
     logOut: async () => {
         try {
             await firebase.auth().signOut();
@@ -109,8 +132,6 @@ const Firebase = {
     signIn: async (email, password) => {
         return firebase.auth().signInWithEmailAndPassword(email, password);
     },
-
-
 
     setReservation: async (date, hour, field, player, userId) => {
 
@@ -168,6 +189,32 @@ const Firebase = {
         }
         return true;
     },
+
+    updateAuthorization: async (uid, authorization) => {
+        try {
+            await db.collection('users').doc(uid).update(
+                {
+                    authorization: authorization
+                }
+            )
+        } catch (error) {
+            console.log("Error @updateAuthorization : ", error)
+            return false;
+        }
+
+        return true;
+    },
+
+    setEvent: async () => {
+        try {
+
+        } catch (error) {
+            console.log("Error @setEvent : ", error)
+            return false;
+        }
+
+        return true;
+    }
 
 }
 

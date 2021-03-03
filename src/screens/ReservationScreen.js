@@ -56,45 +56,49 @@ const ReservationScreen = () => {
         setLoading(false);
     };
 
-
     return (
         <Container>
             <Title>
                 <Text title center semi>RESERVATIONS</Text>
             </Title>
-            <CalendarContainer>
-                <Calendar
-                    minDate={Date()}
-                    onDayPress={onDayPress}
-                    firstDay={1}
-                    enableSwipeMonths={true}
-                    markedDates={{
-                        [selectedDate]: {
-                            selected: true,
-                            disableTouchEvent: true,
-                            selectedColor: '#FBBC05',
-                            selectedTextColor: 'white'
-                        }
-                    }}
-                />
-            </CalendarContainer>
-            {
-                selectedDate &&
+            {user.authorization ? (
                 <>
-                    <Text center large>Créneaux le {selectedDate}</Text>
+                    <CalendarContainer>
+                        <Calendar
+                            minDate={Date()}
+                            onDayPress={onDayPress}
+                            firstDay={1}
+                            enableSwipeMonths={true}
+                            markedDates={{
+                                [selectedDate]: {
+                                    selected: true,
+                                    disableTouchEvent: true,
+                                    selectedColor: '#FBBC05',
+                                    selectedTextColor: 'white'
+                                }
+                            }}
+                        />
+                    </CalendarContainer>
                     {
-                        nombreReservations >= 2 && <Text center medium color={"red"}>Limite de réservations du jour atteinte</Text>
-                    }
-                    {
-                        loading ?
-                            <Loading />
-                            :
-                            <CreneauxContainer>
-                                {creneaux}
-                            </CreneauxContainer>
-                    }
+                        selectedDate &&
+                        <>
+                            <Text center large>Créneaux le {selectedDate}</Text>
+                            {
+                                nombreReservations >= 2 && <Text center medium color={"red"}>Limite de réservations du jour atteinte</Text>
+                            }
+                            {
+                                loading ?
+                                    <Loading />
+                                    :
+                                    <CreneauxContainer>
+                                        {creneaux}
+                                    </CreneauxContainer>
+                            }
 
-                </>
+                        </>
+                    }
+                </>)
+                : (<Text center title>Seul les joueurs inscrits peuvent réserver</Text>)
             }
 
         </Container>

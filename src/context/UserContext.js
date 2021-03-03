@@ -9,6 +9,7 @@ const UserProvider = (props) => {
         uid: "",
         isLoggedIn: null,
         profilPhotoUrl: 'default',
+        authorization: "",
     });
 
     return <UserContext.Provider value={[state, setState]}>{props.children}</UserContext.Provider>;
