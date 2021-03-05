@@ -29,6 +29,10 @@ export default MainStackScreens = () => {
                     iconName = "calendar-outline"
                     break;
 
+                case "Administrator":
+                    iconName = "shield"
+                    break;
+
                 default:
                     iconName = "ios-home"
                     break;

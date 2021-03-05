@@ -4,7 +4,7 @@ import config from '../config/firebase'
 import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/firestore'
-import { SnapshotViewIOS } from "react-native"
+import { uid } from 'uid';
 
 const FirebaseContext = createContext()
 
@@ -205,16 +205,25 @@ const Firebase = {
         return true;
     },
 
-    setEvent: async () => {
+    setEvent: async (titre, description, date, joueurParEquipe, maxEquipes) => {
+        const eventId = uid()
+        const event = {
+            id: eventId,
+            titre,
+            description,
+            date,
+            joueurParEquipe,
+            maxEquipes,
+        }
         try {
-
+            await db.collection('evenements').doc(`${titre} - ${date}`).set(event);
         } catch (error) {
             console.log("Error @setEvent : ", error)
             return false;
         }
 
         return true;
-    }
+    },
 
 }
 

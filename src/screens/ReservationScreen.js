@@ -82,7 +82,7 @@ const ReservationScreen = () => {
                     {
                         selectedDate &&
                         <>
-                            <Text center large>Créneaux le {selectedDate}</Text>
+                            <Text center large>Créneaux le {selectedDate.substr(8, 2)}/{selectedDate.substr(5, 2)}/{selectedDate.substr(0, 4)}</Text>
                             {
                                 nombreReservations >= 2 && <Text center medium color={"red"}>Limite de réservations du jour atteinte</Text>
                             }

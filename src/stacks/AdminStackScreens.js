@@ -5,6 +5,7 @@ import AdministratorScreen from '../screens/AdministratorScreen'
 import UserDetailScreen from '../screens/UserDetailScreen'
 import EventsManagment from '../screens/EventsManagment'
 import UsersManagment from '../screens/UsersManagment'
+import EventCreation from '../components/EventCreation'
 
 
 const AdminStackScreens = () => {
@@ -14,6 +15,7 @@ const AdminStackScreens = () => {
         <AdminStack.Navigator headerMode="">
             <AdminStack.Screen name="admin" component={AdministratorScreen} />
             <AdminStack.Screen name="eventsManagment" component={EventsManagment} />
+            <AdminStack.Screen name="eventCreation" component={EventCreation} />
             <AdminStack.Screen name="usersManagment" component={UsersManagment} />
             <AdminStack.Screen name="userDetail" component={UserDetailScreen} />
         </AdminStack.Navigator>

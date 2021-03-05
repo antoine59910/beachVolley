@@ -61,7 +61,7 @@ const DataContainer = styled.View`
     margin-bottom : 16px;
 `;
 
-const UsersContainer = styled.View`
+const UsersContainer = styled.ScrollView`
 
 `;
 
