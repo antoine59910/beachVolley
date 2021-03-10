@@ -6,6 +6,7 @@ import { UserContext } from '../context/UserContext';
 
 import ReservationScreen from '../screens/ReservationScreen'
 import ProfileScreen from '../screens/ProfileScreen'
+import EventsScreen from '../screens/EventsScreen'
 import AdminStackScreens from './AdminStackScreens'
 
 
@@ -33,6 +34,9 @@ export default MainStackScreens = () => {
                     iconName = "shield"
                     break;
 
+                case "Event":
+                    iconName = "trophy"
+                    break;
                 default:
                     iconName = "ios-home"
                     break;
@@ -46,6 +50,7 @@ export default MainStackScreens = () => {
     return (
         <MainStack.Navigator tabBarOptions={tabBarOptions} screenOptions={screenOptions}>
             <MainStack.Screen name="Reservation" component={ReservationScreen} />
+            <MainStack.Screen name="Event" component={EventsScreen} />
             <MainStack.Screen name="Profile" component={ProfileScreen} />
             {
                 user.authorization === "administrator" &&

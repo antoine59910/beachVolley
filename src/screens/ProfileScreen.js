@@ -92,8 +92,8 @@ export default ProfileScreen
 
 const Container = styled.View`
     align-items: center;
-    margin-top: 64px;
     flex: 1;
+    margin-top: 16px;
 `;
 
 const ProfilePhotoContainer = styled.View`

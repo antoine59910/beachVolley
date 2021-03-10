@@ -5,6 +5,7 @@ import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/firestore'
 import { uid } from 'uid';
+import moment from 'moment';
 
 const FirebaseContext = createContext()
 
@@ -205,9 +206,21 @@ const Firebase = {
         return true;
     },
 
-    setEvent: async (titre, description, date, joueurParEquipe, maxEquipes) => {
-        const eventId = uid()
-        const event = {
+    setEvent: async (titre, description, date, joueurParEquipe, maxEquipes, id) => {
+        const modification = !!id;
+
+        const eventId = id || uid()
+        const eventCreation = {
+            id: eventId,
+            titre,
+            description,
+            date,
+            joueurParEquipe,
+            maxEquipes,
+            nbEquipesInscrites: 0,
+        }
+
+        const eventModification = {
             id: eventId,
             titre,
             description,
@@ -215,13 +228,64 @@ const Firebase = {
             joueurParEquipe,
             maxEquipes,
         }
-        try {
-            await db.collection('evenements').doc(`${titre} - ${date}`).set(event);
-        } catch (error) {
-            console.log("Error @setEvent : ", error)
-            return false;
+
+        if (modification) {
+            try {
+                await db.collection('evenements').doc(eventId).update(eventModification);
+            } catch (error) {
+                console.log("Error @setEvent : ", error)
+                return false;
+            }
+        }
+        //Création
+        else {
+            try {
+                await db.collection('evenements').doc(eventId).set(eventCreation);
+            } catch (error) {
+                console.log("Error @setEvent : ", error)
+                return false;
+            }
         }
 
+        return true;
+    },
+
+    getEvents: async () => {
+        let events = [];
+        const today = moment().format('YYYY-MM-DD')
+
+        try {
+            const snapshot = await db.collection("evenements")
+                .where('date', '>=', today)
+                .orderBy('date', 'desc')
+                .get();
+
+            if (snapshot.empty) {
+                return null;
+            }
+
+            snapshot.forEach(event => {
+                events.push(event.data())
+            }
+            )
+
+            return events;
+
+        } catch (error) {
+            console.log('Error @getEvents : ', error)
+        }
+    },
+
+    deleteEvent: async (id) => {
+
+        try {
+            await db.collection(`evenements`)
+                .doc(id)
+                .delete()
+        } catch (error) {
+            console.log("Error @deleteEvenement : ", error)
+            return false;
+        }
         return true;
     },
 

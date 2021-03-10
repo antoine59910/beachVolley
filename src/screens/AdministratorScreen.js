@@ -2,7 +2,7 @@ import React from 'react'
 import Text from '../components/Text'
 import styled from 'styled-components'
 import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 const Administrator = ({ navigation }) => {
 
@@ -28,7 +28,7 @@ const Administrator = ({ navigation }) => {
                 </UsersButton>
                 <EventsButton onPress={onEventssButtonPress}>
                     <Text title center color={"white"}>
-                        <Ionicons name="calendar-outline" size={40} color="white" />
+                        <FontAwesome name="trophy" size={40} color="white" />
                         {"   "}évènements
 
                     </Text>

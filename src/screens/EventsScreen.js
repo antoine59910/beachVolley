@@ -8,7 +8,7 @@ import { FirebaseContext } from '../context/FireBaseContext';
 import Event from '../components/Event'
 
 
-const EventsManagment = ({ navigation }) => {
+const EventsScreen = () => {
     const firebase = useContext(FirebaseContext);
     const [events, setEvents] = useState([]);
     const isFocused = useIsFocused();
@@ -34,16 +34,11 @@ const EventsManagment = ({ navigation }) => {
                 }
             </EventsContainer>
 
-            {/* Nouvel évènement, on n'envoie vide en paramètre */}
-            <AjoutEvent onPress={() => navigation.navigate('eventCreation', { event: "" })}>
-                <Ionicons name="add-circle" size={100} color="#4CD964" />
-            </AjoutEvent>
-
         </Container >
     )
 }
 
-export default EventsManagment
+export default EventsScreen
 
 const Container = styled.View`
     flex:1;

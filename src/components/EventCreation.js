@@ -1,127 +1,129 @@
-// Formik x React Native example
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components'
-import Text from '../components/Text'
-import { Form, Item, Input } from 'native-base';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { FirebaseContext } from '../context/FireBaseContext'
+import { Toast } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-const EventCreation = ({ navigation }) => {
+import { FirebaseContext } from '../context/FireBaseContext';
+import FormikCreationEvent from './FormikCreationEvent';
 
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [selectedDate, setSelectedDate] = useState();
-    const [numberOfTeams, setNumberOfTeams] = useState();
-    const [playersByTeam, setPlayersByTeam] = useState();
-    const [showCalendar, setShowCalendar] = useState(true)
-    const [loading, setLoading] = useState(false)
+const EventCreation = ({ route }) => {
+    const [loadingValidate, setLoadingValidate] = useState(false)
+    const [loadingDelete, setLoadingDelete] = useState(false)
     const firebase = useContext(FirebaseContext)
+    const navigation = useNavigation();
 
+    //Si c'est une modification
+    const { titre, date, description, maxEquipes, joueurParEquipe, id } = route.params.event
 
-    const onDayPress = (newDate) => {
-        setSelectedDate(newDate.dateString)
-        setShowCalendar(false)
+    const initialValues = {
+        title: titre || '',
+        selectedDate: date || '',
+        description: description || '',
+        numberOfTeams: maxEquipes || '',
+        playersByTeam: joueurParEquipe || '',
     }
 
-    const onValiderPress = async () => {
-        setLoading(true)
-        await firebase.setEvent(title, description, selectedDate, playersByTeam, numberOfTeams)
-        setLoading(false)
+    const ValidationSchema = Yup.object().shape({
+        title: Yup.string()
+            .required('Required'),
+        description: Yup.string(),
+        selectedDate: Yup.string()
+            .required('reaze'),
+        numberOfTeams: Yup.string()
+            .required('Required'),
+        playersByTeam: Yup.string()
+            .required('Required'),
+    });
+
+    const onValiderPress = async ({ ...values }) => {
+        const { title, description, selectedDate, playersByTeam, numberOfTeams } = values
+        let response = false
+
+        setLoadingValidate(true)
+
+        //Modification
+        if (id) {
+            response = await firebase.setEvent(title, description, selectedDate, playersByTeam, numberOfTeams, id)
+            if (response) {
+                Toast.show({
+                    text: "La modification de l'évènement a bien été prise en compte",
+                    textStyle: { textAlign: "center" },
+                    duration: 3000,
+                })
+            }
+            else {
+                Toast.show({
+                    text: 'Erreur lors de la modification',
+                    textStyle: { textAlign: "center" },
+                    duration: 3000,
+                })
+            }
+        }
+        //Création
+        else {
+            response = await firebase.setEvent(title, description, selectedDate, playersByTeam, numberOfTeams)
+            if (response) {
+                Toast.show({
+                    text: "Evènement créé",
+                    textStyle: { textAlign: "center" },
+                    duration: 3000,
+                })
+            }
+            else {
+                Toast.show({
+                    text: 'Erreur lors de la création',
+                    textStyle: { textAlign: "center" },
+                    duration: 3000,
+                })
+            }
+
+        }
+
+
+        setLoadingValidate(false)
+        navigation.goBack();
+    }
+
+    const onDeletePress = async (id) => {
+        setLoadingDelete(true)
+
+        const response = await firebase.deleteEvent(id)
+        if (response) {
+            Toast.show({
+                text: "Evenement supprimé",
+                textStyle: { textAlign: "center" },
+                duration: 3000,
+            })
+        }
+        else {
+            Toast.show({
+                text: "Erreur lors de la suppression de l'évènement",
+                textStyle: { textAlign: "center", color: 'red' },
+                duration: 3000,
+            })
+        }
+        navigation.goBack();
+
+        setLoadingDelete(false)
     }
 
     return (
         <Container>
             <Content>
-                <Form>
-                    <Field>
-                        <Text large center>Titre</Text>
-                        <Item rounded >
-                            <Input
-                                autofocus={true}
-                                onChangeText={(text) => setTitle(text)}
-                                value={title}
-                            />
-                        </Item>
-                    </Field>
-
-                    <Field>
-                        <ButtonShowCalendar onPress={() => showCalendar ? setShowCalendar(false) : setShowCalendar(true)}>
-                            <Text large center>Date</Text>
-                            <Text large >{selectedDate && `${selectedDate.substr(8, 2)}/${selectedDate.substr(5, 2)}/${selectedDate.substr(0, 4)}`}</Text>
-                        </ButtonShowCalendar>
-
-                        {showCalendar &&
-                            <Calendar
-                                minDate={Date()}
-                                onDayPress={onDayPress}
-                                firstDay={1}
-                                enableSwipeMonths={true}
-                                markedDates={{
-                                    [selectedDate]: {
-                                        selected: true,
-                                        disableTouchEvent: true,
-                                        selectedColor: '#FBBC05',
-                                        selectedTextColor: 'white'
-                                    }
-                                }}
-                            />
-                        }
-                    </Field>
-
-                    <Field>
-                        <Text large center>Nombre équipes</Text>
-                        <Item rounded>
-                            <Input
-                                autofocus={true}
-                                keyboardType="numeric"
-                                onChangeText={(text) => setNumberOfTeams(text)}
-                                value={numberOfTeams}
-                            />
-                        </Item>
-                    </Field>
-
-                    <Field>
-                        <Text large center>Joueurs/équipe</Text>
-                        <Item rounded >
-                            <Input
-                                keyboardType="numeric"
-                                onChangeText={(text) => setPlayersByTeam(text)}
-                                value={playersByTeam}
-                            />
-                        </Item>
-                    </Field>
-
-                    <Field>
-                        <Text large center>Description</Text>
-                        <Description>
-                            <DescriptionInput
-                                multiline={true}
-                                numberOfLines={10}
-                                onChangeText={(text) => setDescription(text)}
-                                value={description}
-                                underlineColorAndroid="transparent"
-                            />
-                        </Description>
-                    </Field>
-
-                    <ButtonsContainer>
-                        <ButtonAnnuler onPress={() => navigation.goBack()}>
-                            <Text center large color={"white"}>Annuler</Text>
-                        </ButtonAnnuler>
-
-                        <ButtonValider onPress={onValiderPress}
-                            disabled={loading}
-                        >
-                            {
-                                loading ?
-                                    <Loading />
-                                    : <Text center large color={"white"}>Valider</Text>
-                            }
-
-                        </ButtonValider>
-                    </ButtonsContainer>
-                </Form>
+                <Formik
+                    initialValues={initialValues}
+                    onSubmit={values => onValiderPress(values)}
+                    validationSchema={ValidationSchema}
+                >
+                    <FormikCreationEvent
+                        loadingValidate={loadingValidate}
+                        loadingDelete={loadingDelete}
+                        id={id}
+                        onDeletePress={onDeletePress}
+                    />
+                </Formik>
             </Content>
         </Container>
     )
@@ -129,14 +131,6 @@ const EventCreation = ({ navigation }) => {
 
 export default EventCreation
 
-LocaleConfig.locales['fr'] = {
-    monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
-    monthNamesShort: ['Janv.', 'Févr.', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'],
-    dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-    dayNamesShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
-    today: 'Aujourd\'hui'
-};
-LocaleConfig.defaultLocale = 'fr';
 
 
 const Container = styled.ScrollView`
@@ -147,10 +141,6 @@ const Container = styled.ScrollView`
 
 const Content = styled.View`
     justify-content: space-evenly;
-`;
-
-const ButtonShowCalendar = styled.TouchableOpacity`
-    justify-content: center;
 `;
 
 const Description = styled.ScrollView`
@@ -170,28 +160,3 @@ const DescriptionInput = styled.TextInput`
 const Field = styled.View`
     margin : 10px;
 `;
-
-const ButtonsContainer = styled.View`
-    margin-top : 30px;
-    margin-bottom : 50px;
-    justify-content : space-between;
-    flex-direction: row;
-`;
-
-
-const ButtonValider = styled.TouchableOpacity`
-    background-color: #34A853;
-    width : 100px;
-    border-radius: 50px;
-`;
-
-const ButtonAnnuler = styled.TouchableOpacity`
-    background-color: #EA4335;
-    width : 100px;
-    border-radius: 50px;
-`;
-
-const Loading = styled.ActivityIndicator.attrs(props => ({
-    color: "white",
-    size: "small",
-}))``;

@@ -47,11 +47,6 @@ const SignInScreen = ({ navigation }) => {
             <LogoContainer>
                 <Logo source={require('../../assets/logo.png')} />
             </LogoContainer>
-            <Main>
-                <Text title semi center>
-                    Bienvenue
-                </Text>
-            </Main>
 
             <Auth>
                 <AuthContainer>
@@ -128,10 +123,6 @@ const LogoContainer = styled.View`
 const Logo = styled.Image`
     width : 200px;
     height: 200px;
-`;
-
-const Main = styled.View`
-
 `;
 
 const Auth = styled.View`

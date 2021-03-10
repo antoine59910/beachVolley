@@ -58,9 +58,6 @@ const ReservationScreen = () => {
 
     return (
         <Container>
-            <Title>
-                <Text title center semi>RESERVATIONS</Text>
-            </Title>
             {user.authorization ? (
                 <>
                     <CalendarContainer>
@@ -120,10 +117,6 @@ LocaleConfig.defaultLocale = 'fr';
 
 const Container = styled.View`
     flex:1;
-`;
-
-const Title = styled.View`
-    background-color: #FBBC05; 
 `;
 
 const CalendarContainer = styled.View`

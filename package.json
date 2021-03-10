@@ -35,7 +35,8 @@
     "react-redux": "^7.2.2",
     "redux": "^4.0.5",
     "styled-components": "^5.2.1",
-    "uid": "^2.0.0"
+    "uid": "^2.0.0",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0"
