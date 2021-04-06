@@ -6,7 +6,7 @@ import { UserContext } from '../context/UserContext';
 
 import ReservationScreen from '../screens/ReservationScreen'
 import ProfileScreen from '../screens/ProfileScreen'
-import EventsScreen from '../screens/EventsScreen'
+import EventsStackScreens from './EventsStackScreens'
 import AdminStackScreens from './AdminStackScreens'
 
 
@@ -50,7 +50,7 @@ export default MainStackScreens = () => {
     return (
         <MainStack.Navigator tabBarOptions={tabBarOptions} screenOptions={screenOptions}>
             <MainStack.Screen name="Reservation" component={ReservationScreen} />
-            <MainStack.Screen name="Event" component={EventsScreen} />
+            <MainStack.Screen name="Event" component={EventsStackScreens} />
             <MainStack.Screen name="Profile" component={ProfileScreen} />
             {
                 user.authorization === "administrator" &&

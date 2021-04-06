@@ -6,9 +6,9 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 import { FirebaseContext } from '../context/FireBaseContext';
-import FormikCreationEvent from './FormikCreationEvent';
+import FormikCreationEvent from '../components/administrator/events/FormikCreationEvent';
 
-const EventCreation = ({ route }) => {
+const EventCreationScreen = ({ route }) => {
     const [loadingValidate, setLoadingValidate] = useState(false)
     const [loadingDelete, setLoadingDelete] = useState(false)
     const firebase = useContext(FirebaseContext)
@@ -104,9 +104,9 @@ const EventCreation = ({ route }) => {
                 duration: 3000,
             })
         }
-        navigation.goBack();
-
         setLoadingDelete(false)
+
+        navigation.goBack();
     }
 
     return (
@@ -129,7 +129,7 @@ const EventCreation = ({ route }) => {
     )
 };
 
-export default EventCreation
+export default EventCreationScreen
 
 
 

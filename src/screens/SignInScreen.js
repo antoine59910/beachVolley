@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import styled from 'styled-components'
 
 import { UserContext } from '../context/UserContext'

@@ -1,8 +1,6 @@
 const initialState = { nombreReservations: 0 }
 
 export function ReducerNombreReservations(state = initialState, action) {
-
-
     let nextState
     switch (action.type) {
         case "SetNombreReservations":

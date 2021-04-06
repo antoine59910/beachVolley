@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import styled from 'styled-components'
 
-import Text from '../components/Text'
-import Terrain from '../components/Terrain'
+import Text from '../Text'
+import Terrain from './Terrain'
 
 const Creneau = ({ date, hour, reservationsParHour }) => {
     const [loading, setLoading] = useState(false)

@@ -1,7 +1,8 @@
 import React from 'react'
 import { Item, Input, Icon } from 'native-base';
-import Text from './Text'
 import { useField } from 'formik'
+
+import Text from '../Text'
 
 const FormTextInput = ({ fieldName, label, ...props }) => {
     const [field, meta] = useField(fieldName);

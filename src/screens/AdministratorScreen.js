@@ -1,8 +1,9 @@
 import React from 'react'
-import Text from '../components/Text'
 import styled from 'styled-components'
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+
+import Text from '../components/Text'
 
 const Administrator = ({ navigation }) => {
 

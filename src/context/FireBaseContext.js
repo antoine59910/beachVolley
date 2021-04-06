@@ -1,6 +1,5 @@
 import React, { createContext } from "react"
 import config from '../config/firebase'
-
 import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/firestore'
@@ -237,6 +236,7 @@ const Firebase = {
                 return false;
             }
         }
+
         //Création
         else {
             try {
@@ -247,6 +247,17 @@ const Firebase = {
             }
         }
 
+        return true;
+    },
+
+    updateEvent: async (eventId, newEvent) => {
+        console.log(eventId)
+        console.log(newEvent)
+        try {
+            await db.collection('evenements').doc(eventId).update(newEvent);
+        } catch (error) {
+            console.log('Error @incrementInscribedTeams : ', error)
+        }
         return true;
     },
 
@@ -288,6 +299,82 @@ const Firebase = {
         }
         return true;
     },
+
+    setInscription: async (eventId, equipe, user) => {
+        const inscriptionId = uid()
+
+        const inscription = {
+            id: inscriptionId,
+            equipe: equipe,
+            profilePhotoUrl: user.profilePhotoUrl,
+            inscrivantId: user.uid,
+            inscrivant: user.username
+        }
+
+        try {
+            await db.collection('evenements').doc(eventId)
+                .collection('equipes').doc(inscriptionId).set(inscription);
+        } catch (error) {
+            console.log("Error @setInscription : ", error)
+            return false;
+        }
+
+        return true;
+    },
+
+    updateInscription: async (eventId, equipe, equipeId) => {
+        const inscriptionId = inscriptionId
+
+        const inscription = {
+            equipe: equipe,
+        }
+
+        try {
+            await db.collection('evenements').doc(eventId)
+                .collection('equipes').doc(equipeId).update(inscription);
+        } catch (error) {
+            console.log("Error @updateInscription : ", error)
+            return false;
+        }
+
+        return true;
+    },
+
+    deleteInscription: async (eventId, equipeId) => {
+
+        try {
+            await db.collection(`evenements`).doc(eventId)
+                .collection('equipes').doc(equipeId)
+                .delete()
+        } catch (error) {
+            console.log("Error @deleteEvenement : ", error)
+            return false;
+        }
+        return true;
+    },
+
+    getInscriptionsEvent: async (eventId) => {
+        let inscriptions = [];
+
+        try {
+            const snapshot = await db.collection("evenements").doc(eventId).collection("equipes")
+                .get();
+
+            if (snapshot.empty) {
+                return null;
+            }
+
+            snapshot.forEach(inscription => {
+                inscriptions.push(inscription.data())
+            }
+            )
+            return inscriptions;
+
+        } catch (error) {
+            console.log('Error @getInscriptions : ', error)
+        }
+    },
+
 
 }
 

@@ -5,8 +5,8 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { useDispatch, useSelector } from 'react-redux'
 
 import { FirebaseContext } from '../context/FireBaseContext';
-import Creneau from '../components/Creneau'
 import { UserContext } from '../context/UserContext';
+import Creneau from '../components/reservations/Creneau';
 import * as actions from '../redux/actions'
 
 

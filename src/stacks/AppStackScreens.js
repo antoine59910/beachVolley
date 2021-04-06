@@ -18,8 +18,8 @@ const AppStackScreens = () => {
             ) : user.isLoggedIn ? (
                 <AppStack.Screen name="Main" component={MainStackScreens} />
             ) : (
-                        <AppStack.Screen name="Auth" component={AuthStackScreens} />
-                    )}
+                <AppStack.Screen name="Auth" component={AuthStackScreens} />
+            )}
         </AppStack.Navigator>
     )
 }

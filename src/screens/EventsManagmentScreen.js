@@ -1,17 +1,21 @@
 import React, { useEffect, useState, useContext } from 'react'
 import styled from 'styled-components'
-import Text from '../components/Text'
 import { Ionicons } from '@expo/vector-icons';
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import Event from '../components/Event'
 
-
-const EventsManagment = ({ navigation }) => {
+const EventsManagmentScreen = () => {
     const firebase = useContext(FirebaseContext);
     const [events, setEvents] = useState([]);
     const isFocused = useIsFocused();
+    const navigation = useNavigation();
+
+    const onPressEvent = (event) => {
+        navigation.navigate('eventCreation', { event: event })
+    }
+
 
     useEffect(() => {
         const getEvents = async () => {
@@ -24,14 +28,17 @@ const EventsManagment = ({ navigation }) => {
 
     return (
         <Container>
-
             <EventsContainer>
+
                 {events &&
-                    events.map((event, index) => <Event
-                        event={event}
-                        key={index}
-                    />)
-                }
+                    events.map((event, index) => (
+                        <EventContainer
+                            onPress={() => onPressEvent(event)}
+                            key={index}
+                        >
+                            <Event event={event} />
+                        </EventContainer>)
+                    )}
             </EventsContainer>
 
             {/* Nouvel évènement, on n'envoie vide en paramètre */}
@@ -43,7 +50,7 @@ const EventsManagment = ({ navigation }) => {
     )
 }
 
-export default EventsManagment
+export default EventsManagmentScreen
 
 const Container = styled.View`
     flex:1;
@@ -59,4 +66,10 @@ const AjoutEvent = styled.TouchableOpacity`
     position : absolute;
     bottom:20px;
     right:20px;
+`;
+
+const EventContainer = styled.TouchableOpacity`
+    border-width: 0.5px;
+    background-color: ${props => props.color || "white"};
+    padding: 15px;
 `;

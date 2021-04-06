@@ -1,13 +1,9 @@
 import React, { useEffect, useContext } from 'react'
 import styled from 'styled-components'
-import LottieView from 'lottie-react-native'
+import { StatusBar } from 'react-native'
 
 import { UserContext } from '../context/UserContext'
 import { FirebaseContext } from '../context/FireBaseContext'
-
-import Text from '../components/Text'
-import { StatusBar } from 'react-native'
-
 
 const LoadingScreen = () => {
     const [_, setUser] = useContext(UserContext)

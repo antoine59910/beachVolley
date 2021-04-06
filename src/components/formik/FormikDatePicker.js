@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useField, useFormikContext } from "formik";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Item, Icon, Input } from 'native-base';
-import Text from './Text';
-import moment from 'moment';
 import styled from 'styled-components'
+
+import Text from '../Text';
 
 const FormikDatePicker = ({ fieldName, label }) => {
     const { setFieldValue } = useFormikContext();

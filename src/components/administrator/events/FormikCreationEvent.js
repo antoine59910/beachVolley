@@ -3,10 +3,10 @@ import React from 'react';
 import { Form } from 'native-base';
 import styled from 'styled-components'
 
-import Text from './Text';
-import FormikDatePicker from './FormikDatePicker'
-import FormTextInput from './FormTextInput';
-import FormikTextArea from './FormikTextArea';
+import Text from '../../Text';
+import FormikDatePicker from '../../formik/FormikDatePicker'
+import FormTextInput from '../../formik/FormTextInput';
+import FormikTextArea from '../../formik/FormikTextArea';
 
 const FormikCreationEvent = ({ loadingValidate, loadingDelete, id, onDeletePress }) => {
     const { submitForm } = useFormikContext();

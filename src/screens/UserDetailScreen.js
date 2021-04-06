@@ -1,8 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react'
-import Text from '../components/Text'
+import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { Dimensions } from 'react-native';
+
 import { FirebaseContext } from '../context/FireBaseContext'
+import Text from '../components/Text'
 
 const UserDetailScreen = ({ route }) => {
     const firebase = useContext(FirebaseContext)
@@ -138,4 +139,4 @@ margin: 16px 0px 16px 0px;
     justify-content: center;
     background-color: #FBBC05;
     border-radius: 6px;
-`; 
+`;

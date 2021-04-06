@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 
-import Text from '../components/Text'
-import { UserContext } from '../context/UserContext';
-import { FirebaseContext } from '../context/FireBaseContext';
-import * as actions from '../redux/actions'
+import Text from '../Text'
+import { UserContext } from '../../context/UserContext';
+import { FirebaseContext } from '../../context/FireBaseContext';
+import * as actions from '../../redux/actions'
 
 
 const Terrain = ({ date, hour, field, reservationsParHourParField }) => {
-    const [user, setUser] = useContext(UserContext);
+    const [user] = useContext(UserContext);
     const [playersOnField, setPlayersOnField] = useState([]);
     const [alreadyRegistred, setAlreadyRegistred] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -25,11 +25,11 @@ const Terrain = ({ date, hour, field, reservationsParHourParField }) => {
             if (reservationsParHourParField.filter(element => element.joueurId === user.uid).length !== 0)
                 setAlreadyRegistred(true)
         }
-
     }, [reservationsParHourParField])
 
     const onReservationPress = async () => {
         setIsLoading(true);
+
 
         //Ajout réservation
         if (!alreadyRegistred) {

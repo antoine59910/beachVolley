@@ -8,9 +8,6 @@ import { UserContext } from '../context/UserContext';
 import { FirebaseContext } from '../context/FireBaseContext';
 import Text from '../components/Text';
 
-
-
-
 const ProfileScreen = () => {
     const [user, setUser] = useContext(UserContext);
     const firebase = useContext(FirebaseContext);

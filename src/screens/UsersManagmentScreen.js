@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react'
-import Text from '../components/Text'
 import styled from 'styled-components'
 import { useIsFocused } from "@react-navigation/native";
 
 import { FirebaseContext } from '../context/FireBaseContext';
+import Text from '../components/Text'
 
-const UsersManagment = ({ navigation }) => {
+const UsersManagmentScreen = ({ navigation }) => {
     const firebase = useContext(FirebaseContext);
     const [users, setUsers] = useState([]);
     const isFocused = useIsFocused();
@@ -46,7 +46,7 @@ const UsersManagment = ({ navigation }) => {
     )
 }
 
-export default UsersManagment
+export default UsersManagmentScreen
 
 const Container = styled.View`
     flex:1;
