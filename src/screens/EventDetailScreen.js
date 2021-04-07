@@ -6,9 +6,12 @@ import { UserContext } from '../context/UserContext';
 
 import Text from '../components/Text'
 import InscribedTeams from '../components/events/InscribedTeams'
+import { ROUGE, VERT, JAUNE } from '../components/Color'
 
 const EventInscriptionScreen = ({ route }) => {
     const [user, setUser] = useContext(UserContext)
+    const [alreadySuscribed, setAlreadySuscribed] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false)
     const firebase = useContext(FirebaseContext);
     const [inscriptions, setInscriptions] = useState([]);
     const isFocused = useIsFocused();
@@ -35,6 +38,20 @@ const EventInscriptionScreen = ({ route }) => {
 
         getInscriptionsEvent();
     }, [isFocused])
+
+    useEffect(() => {
+        if (inscriptions)
+            inscriptions.map(inscription => {
+                console.log()
+                if (inscription.inscrivantId === user.uid)
+                    setAlreadySuscribed(true)
+            })
+    }, [inscriptions])
+
+    useEffect(() => {
+        if (user.authorization === "administrator")
+            setIsAdmin(true)
+    }, [])
 
     return (
         <Container>
@@ -66,13 +83,31 @@ const EventInscriptionScreen = ({ route }) => {
             <ButtonValiderContainer>
                 <ButtonValider
                     onPress={() => onPressSInscrire(event)}
-                    disabled={placesRestantes <= 0 ? true : false}
-                    color={placesRestantes > 0 && "#34A853"}
+                    disabled={
+                        (placesRestantes > 0 && !alreadySuscribed) ||
+                            (placesRestantes > 0 && alreadySuscribed && isAdmin)
+                            ? false : true
+                    }
+                    color={
+                        (placesRestantes > 0 && !alreadySuscribed) ||
+                            (placesRestantes > 0 && alreadySuscribed && isAdmin)
+                            ? JAUNE :
+                            (alreadySuscribed && !isAdmin)
+                                ? VERT :
+                                (placesRestantes <= 0 && isAdmin) ||
+                                    (placesRestantes <= 0 && !isAdmin && alreadySuscribed)
+                                    ? ROUGE : null}
                 >
                     {
-                        placesRestantes <= 0 ?
-                            <Text center large color={"white"}>COMPLET</Text>
-                            : <Text center large color={"white"}>S'inscrire</Text>
+                        (placesRestantes > 0 && !alreadySuscribed) ||
+                            (placesRestantes > 0 && alreadySuscribed && isAdmin)
+                            ? <Text center large color={"white"}>S'inscrire</Text> :
+                            (alreadySuscribed && !isAdmin)
+                                ? <Text center large color={"white"}>Déjà inscrit</Text> :
+                                (placesRestantes <= 0 && isAdmin) ||
+                                    (placesRestantes <= 0 && !isAdmin && alreadySuscribed)
+                                    ? <Text center large color={"white"}>COMPLET</Text>
+                                    : null
                     }
                 </ButtonValider>
             </ButtonValiderContainer>
@@ -117,7 +152,7 @@ const TeamsContainer = styled.View`
 
 const InscriptionContainer = styled.TouchableOpacity`
     border-width: 0.5px;
-    background-color: ${props => props.color || "white"};
+    background-color: white;
     padding: 15px;
 `;
 
