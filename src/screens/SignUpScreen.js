@@ -1,22 +1,29 @@
 import React, { useState, useContext } from 'react'
+import { Modal } from 'react-native'
 import { Platform } from 'react-native'
 import styled from 'styled-components'
 import { AntDesign } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons';
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from 'expo-image-picker'
+import { Form, Item, Picker } from 'native-base';
 
 import { FirebaseContext } from '../context/FireBaseContext'
 import { UserContext } from '../context/UserContext'
+import { ROUGE } from '../components/Color'
 
 import Text from '../components/Text'
 
 const SignUpScreen = ({ navigation }) => {
 
-    const [username, setUsername] = useState();
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [level, setLevel] = useState("débutant")
     const [loading, setLoading] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState();
+    const [showModal, setShowModal] = useState(false)
+
     const firebase = useContext(FirebaseContext)
     const [_, setUser] = useContext(UserContext)
 
@@ -45,12 +52,11 @@ const SignUpScreen = ({ navigation }) => {
         }
     }
 
-
     const addProfilePhoto = async () => {
         const status = await getPermission()
 
         if (status !== "granted") {
-            alert("We need permission to access your camera roll")
+            alert("La permission est requise pour accéder à vos images")
 
             return;
         }
@@ -61,118 +67,191 @@ const SignUpScreen = ({ navigation }) => {
     const signUp = async () => {
         setLoading(true)
 
-        const user = { username, email, password, profilePhoto };
+        const user = { username, email, password, level, profilePhoto };
 
         try {
             const createdUser = await firebase.createUser(user)
-
-            setUser({ ...createdUser, isLoggedIn: true })
+            if (createdUser)
+                setUser({ ...createdUser, isLoggedIn: true })
         } catch (error) {
-            console.log("Error @signup: ", error)
+            alert(error)
+
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
+    const onChangeLevel = (value) => {
+        setLevel(value)
+    }
+
+    const handleOnPressInformationLevel = () => {
+        setShowModal(true)
+    }
+
     return (
-        <Container>
+        <>
+            <Container>
 
-            <Main>
-                <Text title semi center>
-                    Inscription
+                <Main>
+                    <Text title semi center>
+                        Inscription
                 </Text>
-            </Main>
-            <ProfilePhotoTitle>
-                <Text large light center >AVATAR</Text>
-            </ProfilePhotoTitle>
-            <ProfilePhotoContainer onPress={addProfilePhoto}>
 
-                {
-                    profilePhoto ? (
-                        <ProfilePhoto source={{ uri: profilePhoto }} />
-                    ) : (
+                </Main>
+                <ProfilePhotoTitle>
+                    <Text large light center >AVATAR</Text>
+                </ProfilePhotoTitle>
+                <ProfilePhotoContainer onPress={addProfilePhoto}>
+
+                    {
+                        profilePhoto ? (
+                            <ProfilePhoto source={{ uri: profilePhoto }} />
+                        ) : (
                             <DefaultProfilePhoto>
 
                                 <AntDesign name="plus" size={24} color="white" />
                             </DefaultProfilePhoto>
                         )
-                }
-            </ProfilePhotoContainer>
+                    }
+                </ProfilePhotoContainer>
 
-            <Auth>
-                <AuthContainer>
-                    <AuthTitle>
-                        <Text>Nom utilisateur</Text>
-                    </AuthTitle>
-                    <AuthField
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        autofocus={true}
-                        onChangeText={(username) => setUsername(username.trim())}
-                        value={username}
-                    />
-                </AuthContainer>
+                <Auth>
+                    <AuthContainer>
+                        <AuthTitle>
+                            <Text>Adresse mail</Text>
+                        </AuthTitle>
+                        <AuthField
+                            autoCapitalize="none"
+                            autoCompleteType="email"
+                            autoCorrect={false}
+                            keyboardType="email-address"
+                            onChangeText={(text) => setEmail(text.trim())}
+                            value={email}
+                        />
+                    </AuthContainer>
 
-                <AuthContainer>
-                    <AuthTitle>
-                        <Text>Adresse mail</Text>
-                    </AuthTitle>
-                    <AuthField
-                        autoCapitalize="none"
-                        autoCompleteType="email"
-                        autoCorrect={false}
-                        keyboardType="email-address"
-                        onChangeText={(text) => setEmail(text.trim())}
-                        value={email}
-                    />
-                </AuthContainer>
+                    <AuthContainer>
+                        <AuthTitle>
+                            <Text>Mot de passe</Text>
+                        </AuthTitle>
+                        <AuthField
+                            autoCapitalize="none" //N'écrit pas la première lettre en majuscule
+                            autoCompleteType="password"
+                            autoCorrect={false}
+                            secureTextEntry={true}
+                            onChangeText={(text) => setPassword(text.trim())}
+                            value={password}
+                        />
+                    </AuthContainer>
 
-                <AuthContainer>
-                    <AuthTitle>
-                        <Text>Mot de passe</Text>
-                    </AuthTitle>
-                    <AuthField
-                        autoCapitalize="none" //N'écrit pas la première lettre en majuscule
-                        autoCompleteType="password"
-                        autoCorrect={false}
-                        secureTextEntry={true}
-                        onChangeText={(text) => setPassword(text.trim())}
-                        value={password}
-                    />
-                </AuthContainer>
-            </Auth>
+                    <AuthContainer>
+                        <AuthTitle>
+                            <Text>Nom utilisateur</Text>
+                        </AuthTitle>
+                        <AuthField
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            autofocus={true}
+                            onChangeText={(username) => setUsername(username.trim())}
+                            value={username}
+                        />
+                    </AuthContainer>
 
-            <SignUpContainer onPress={signUp} disabled={loading}>
-                {loading ?
-                    (
-                        <Loading />
-                    ) : (
-                        <Text bold center color="white">
-                            S'enregistrer
-                        </Text>
+                    <AuthContainer>
+                        <InformationTouchableOpacity onPress={handleOnPressInformationLevel}>
+                            <AuthTitle>
+                                <Text><Ionicons name="information-circle-outline" size={24} color="black" />{` Niveau`}</Text>
+                            </AuthTitle>
+                        </InformationTouchableOpacity>
 
-                    )
-                }
+                        <Form>
+                            <Item picker>
+                                <Picker
+                                    mode="dropdown"
+                                    iosIcon={<AntDesign name="caretdown" size={24} color="black" />}
+                                    placeholder="Niveau"
+                                    placeholderStyle={{ color: "#bfc6ea" }}
+                                    placeholderIconColor="#007aff"
+                                    selectedValue={level}
+                                    onValueChange={onChangeLevel}
+                                >
+                                    <Picker.Item label="Débutant" value="débutant" />
+                                    <Picker.Item label="Intérmédiaire" value="intermédiaire" />
+                                    <Picker.Item label="Confirmé" value="confirmé" />
+                                </Picker>
+                            </Item>
+                        </Form>
+                    </AuthContainer>
 
-            </SignUpContainer>
+                </Auth>
 
-            <SignIn onPress={() => navigation.navigate('SignIn')}>
-                <Text small center>
-                    Déjà inscrit ?{"  "}
-                    <Text bold color="#FBBC05">
-                        Connexion
+                <SignUpContainer onPress={signUp} disabled={loading}>
+                    {loading ?
+                        (
+                            <Loading />
+                        ) : (
+                            <Text bold center color="white">
+                                S'enregistrer
+                            </Text>
+
+                        )
+                    }
+
+                </SignUpContainer>
+
+                <SignIn onPress={() => navigation.navigate('SignIn')}>
+                    <Text small center>
+                        Déjà inscrit ?{"  "}
+                        <Text bold color="#FBBC05">
+                            Connexion
                     </Text>
-                </Text>
-            </SignIn>
+                    </Text>
+                </SignIn>
 
-            <StatusBar barStyle="light-content" />
-        </Container>
+                <StatusBar barStyle="light-content" />
+            </Container>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={showModal}
+                onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                    setShowModal(!showModal);
+                }}
+            >
+                <CenteredView>
+                    <ModalView>
+                        <CloseModal onPress={() => setShowModal(false)}>
+                            <AntDesign name="closecircle" size={30} color="black" />
+                        </CloseModal>
+                        <Text bold large center>Débutant :</Text>
+                        <Text medium>Découvre le beach-volley ou</Text>
+                        <Text medium>Joue en salle en départemental ou en loisir</Text>
+
+                        <Text>{
+                        }</Text>
+
+                        <Text bold large center>Intermédiaire :</Text>
+                        <Text medium>2 ans d'expérience en beach-volley ou</Text>
+                        <Text medium>Joue en salle de la régionale jusqu'en prénationale</Text>
+
+                        <Text>{
+                        }</Text>
+
+                        <Text bold large center>Confirmé :</Text>
+                        <Text medium>5 ans d'expérience en beach-volley ou</Text>
+                        <Text medium>Joue en salle en nationale 3 et plus</Text>
+                    </ModalView>
+                </CenteredView>
+            </Modal>
+        </>
     )
 }
 
 export default SignUpScreen
 
-const Container = styled.View`
+const Container = styled.ScrollView`
     flex:1;
 `;
 
@@ -219,6 +298,10 @@ const AuthTitle = styled(Text)`
     font-weight: 300;
 `;
 
+const InformationTouchableOpacity = styled.TouchableOpacity`
+
+`;
+
 const AuthField = styled.TextInput`
     border-bottom-color: #8e93a1;
     border-bottom-width: 0.5px;
@@ -245,3 +328,25 @@ const SignIn = styled.TouchableOpacity`
 `;
 
 const StatusBar = styled.StatusBar``;
+
+const CenteredView = styled.View`
+    flex: 1;
+    justifyContent: center;
+    alignItems: center;
+    marginTop: 22px;
+`;
+
+const ModalView = styled.View`
+    margin: 20px;
+    backgroundColor: white;
+    borderRadius: 20px;
+    border-width: 2px;
+    padding: 35px;
+    shadowColor: #000;
+`;
+
+const CloseModal = styled.TouchableOpacity`
+    position : absolute;
+    top:10px;
+    right:10px;
+`;

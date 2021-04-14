@@ -48,6 +48,7 @@ const EventInscriptionScreen = ({ route }) => {
                     text: "Inscription modifiée",
                     textStyle: { textAlign: "center" },
                     duration: 3000,
+                    type: 'success',
                 })
             }
         }
@@ -65,6 +66,7 @@ const EventInscriptionScreen = ({ route }) => {
                     text: "Inscription validée",
                     textStyle: { textAlign: "center" },
                     duration: 3000,
+                    type: 'success',
                 })
             }
         }
@@ -98,6 +100,7 @@ const EventInscriptionScreen = ({ route }) => {
                 text: "Inscription supprimée",
                 textStyle: { textAlign: "center" },
                 duration: 3000,
+                position: 'top',
             })
         }
         else {
@@ -105,6 +108,7 @@ const EventInscriptionScreen = ({ route }) => {
                 text: "Erreur lors de la suppression de l'inscription",
                 textStyle: { textAlign: "center", color: 'red' },
                 duration: 3000,
+                position: 'top',
             })
         }
 
@@ -125,7 +129,6 @@ const EventInscriptionScreen = ({ route }) => {
         }
 
     }, [])
-
 
     return (
         <Container>

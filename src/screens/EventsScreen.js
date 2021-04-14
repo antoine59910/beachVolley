@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react'
 import styled from 'styled-components'
 import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { Content } from 'native-base';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import Event from '../components/Event'
+import Text from '../components/Text'
 
 const EventsScreen = () => {
     const firebase = useContext(FirebaseContext);
     const [events, setEvents] = useState([]);
-    const isFocused = useIsFocused();
     const navigation = useNavigation();
+    const isFocused = useIsFocused();
 
     const onPressEvent = (event) => {
         navigation.navigate('eventDetail', { event: event })
@@ -25,44 +27,61 @@ const EventsScreen = () => {
 
 
     return (
-        <Container>
-
+        <Content padder>
+            <Text title heavy style={{ top: 20, left: 20 }}>Évenements</Text>
             <EventsContainer>
                 {events &&
-                    events.map((event, index) => (
-                        <EventContainer
-                            onPress={() => onPressEvent(event)}
-                            key={index}
-                        >
-                            <Event event={event} />
-                        </EventContainer>)
-                    )}
+                    events.map((event) => (
+                        <EventContainer key={event.id} onPress={() => onPressEvent(event)}>
+                            <PhotoContainer>
+                                <Photo
+                                    source={require("../../assets/eventPictureResized.jpg")}
+                                />
+                            </PhotoContainer>
+                            <TextContainer>
+                                <Event event={event} />
+                            </TextContainer>
+                        </EventContainer>
+                    ))
+                }
             </EventsContainer>
 
-        </Container >
+        </Content >
     )
 }
 
 export default EventsScreen
 
-const Container = styled.View`
-    flex:1;
-`;
 
 const EventsContainer = styled.ScrollView`
     flex:1;
     margin : 15px;
-    background-color: white;
-`;
-
-const AjoutEvent = styled.TouchableOpacity`
-    position : absolute;
-    bottom:20px;
-    right:20px;
+    margin-top: 50px;
 `;
 
 const EventContainer = styled.TouchableOpacity`
-    border-width: 0.5px;
-    background-color: ${props => props.color || "white"};
-    padding: 15px;
+    flex:1;
+    border-width:2px;
+    border-radius:15px;
+    height: 330px;
+    width: 311px;
+    margin: auto;
+    margin-bottom: 20px;
+`;
+
+const PhotoContainer = styled.View`
+    text-align: center;
+    margin: auto;
+    flex: 2;
+`;
+
+const Photo = styled.Image`
+    height: 200px;
+    width: 306px;
+    border-top-left-radius :12px;
+    border-top-right-radius :12px;
+`;
+
+const TextContainer = styled.View`
+    flex:1;
 `;

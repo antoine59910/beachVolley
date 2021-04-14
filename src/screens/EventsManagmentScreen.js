@@ -28,6 +28,7 @@ const EventsManagmentScreen = () => {
 
     return (
         <Container>
+
             <EventsContainer>
 
                 {events &&

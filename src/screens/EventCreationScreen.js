@@ -51,6 +51,7 @@ const EventCreationScreen = ({ route }) => {
                     text: "La modification de l'évènement a bien été prise en compte",
                     textStyle: { textAlign: "center" },
                     duration: 3000,
+                    position: "top"
                 })
             }
             else {

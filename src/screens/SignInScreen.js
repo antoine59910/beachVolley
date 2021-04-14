@@ -20,9 +20,7 @@ const SignInScreen = ({ navigation }) => {
 
         try {
             await firebase.signIn(email, password);
-
             const uid = await firebase.getCurrentUser().uid;
-
             const userInfo = await firebase.getUserInfo(uid);
 
             setUser({
@@ -32,6 +30,7 @@ const SignInScreen = ({ navigation }) => {
                 profilePhotoUrl: userInfo.profilePhotoUrl,
                 isLoggedIn: true,
                 authorization: userInfo.authorization,
+                level: userInfo.level,
             })
 
         } catch (error) {
@@ -41,6 +40,7 @@ const SignInScreen = ({ navigation }) => {
             setLoading(false)
         }
     }
+
     return (
         <Container>
             <LogoContainer>
@@ -68,7 +68,7 @@ const SignInScreen = ({ navigation }) => {
                         <Text>Mot de passe</Text>
                     </AuthTitle>
                     <AuthField
-                        autoCapitalize="none" //N'écrit pas la première lettre en majuscule
+                        autoCapitalize="none"
                         autoCompleteType="password"
                         autoCorrect={false}
                         secureTextEntry={true}
@@ -109,7 +109,7 @@ const SignInScreen = ({ navigation }) => {
 
 export default SignInScreen
 
-const Container = styled.View`
+const Container = styled.ScrollView`
     flex:1;
 `;
 

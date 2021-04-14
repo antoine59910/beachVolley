@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { UserContext } from '../context/UserContext';
 
 import ReservationScreen from '../screens/ReservationScreen'
-import ProfileScreen from '../screens/ProfileScreen'
+import ProfileStackScreens from './ProfileStackScreens'
 import EventsStackScreens from './EventsStackScreens'
 import AdminStackScreens from './AdminStackScreens'
 
@@ -51,7 +51,7 @@ export default MainStackScreens = () => {
         <MainStack.Navigator tabBarOptions={tabBarOptions} screenOptions={screenOptions}>
             <MainStack.Screen name="Reservation" component={ReservationScreen} />
             <MainStack.Screen name="Event" component={EventsStackScreens} />
-            <MainStack.Screen name="Profile" component={ProfileScreen} />
+            <MainStack.Screen name="Profile" component={ProfileStackScreens} />
             {
                 user.authorization === "administrator" &&
                 <MainStack.Screen name="Administrator" component={AdminStackScreens} />

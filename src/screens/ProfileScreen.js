@@ -2,15 +2,18 @@ import React, { useContext } from 'react'
 import styled from 'styled-components'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import openMap from 'react-native-open-maps';
-import { Dimensions, Button } from 'react-native';
+import { Dimensions } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
 
 import { UserContext } from '../context/UserContext';
 import { FirebaseContext } from '../context/FireBaseContext';
 import Text from '../components/Text';
+import { JAUNE, VERT, ROUGE } from '../components/Color'
 
 const ProfileScreen = () => {
     const [user, setUser] = useContext(UserContext);
     const firebase = useContext(FirebaseContext);
+    const navigation = useNavigation();
 
     const logOut = async () => {
         const loggedOut = await firebase.logOut();
@@ -22,12 +25,16 @@ const ProfileScreen = () => {
 
     const goToBeachClub = () => {
         openMap({
-            latitude: 43.967993,
-            longitude: 4.831655,
+            latitude: 43.9674698,
+            longitude: 4.8314312,
             provider: "google",
-            // end: "Beach Club Mangrove Piscine",
-            // navigate_mode: "navigate",
+            travelType: "drive",
+            end: "Beach+Club+Mangrove+Piscine",
         })
+    }
+
+    const handleOnModifyProfilPress = () => {
+        navigation.navigate('ModifyProfile');
     }
 
     return (
@@ -41,15 +48,21 @@ const ProfileScreen = () => {
                     }
                 />
             </ProfilePhotoContainer>
-            <Text medium bold margin="16px 0 32px 0">
+            <Text large bold margin="16px">
                 {user.username}
             </Text>
-            <Button
-                color={'#bdc3c7'}
-                onPress={goToBeachClub}
-                title="Click To Open Maps 🗺" />
-
+            <Text medium bold margin="0 0 16px 0">
+                Niveau : {user.level}
+            </Text>
+            <ModifyProfil onPress={handleOnModifyProfilPress}>
+                <Text medium bold>
+                    Modifier le profil
+                </Text>
+            </ModifyProfil>
             <MainContainer>
+                <GoogleMapButton onPress={goToBeachClub}>
+                    <GoogleMapImage source={require("../../assets/googleMaps.png")} />
+                </GoogleMapButton>
                 <MapView
                     provider={PROVIDER_GOOGLE}
                     style={{
@@ -57,8 +70,8 @@ const ProfileScreen = () => {
                         width: Dimensions.get('window').width,
                     }}
                     initialRegion={{
-                        latitude: 43.967467,
-                        longitude: 4.831532,
+                        latitude: 43.9674698,
+                        longitude: 4.8314312,
                         latitudeDelta: 0.0622,
                         longitudeDelta: 0.0621,
                     }}
@@ -76,8 +89,9 @@ const ProfileScreen = () => {
                     />
                 </MapView>
             </MainContainer>
+
             <Logout onPress={logOut}>
-                <Text medium bold color="#23a8d9">
+                <Text medium bold>
                     Se déconnecter
                 </Text>
             </Logout>
@@ -105,8 +119,33 @@ const ProfilePhoto = styled.Image`
 
 const MainContainer = styled.View`
     flex: 1;
+    border-width: 3px;
 `
 
 const Logout = styled.TouchableOpacity`
     margin-bottom:32px;
+    margin-top:32px;
+    background-color:${JAUNE};
+    padding: 10px;
+    border-radius: 10px;
+`;
+
+const ModifyProfil = styled.TouchableOpacity`
+    margin-bottom:32px;
+    margin-top:20px;
+    background-color:${JAUNE};
+    padding: 10px;
+    border-radius: 10px;
+`;
+
+const GoogleMapButton = styled.TouchableOpacity`
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    z-index:1;
+`;
+
+const GoogleMapImage = styled.Image`
+    width : 100px;
+    height: 100px;
 `;

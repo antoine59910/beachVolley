@@ -9,7 +9,7 @@ const FormTextInput = ({ fieldName, label, ...props }) => {
     const error = meta.error && meta.touched;
     const success = !meta.error && meta.touched;
 
-    const { type } = props;
+    const { type, editable } = props;
 
     return (
         <>
@@ -20,6 +20,7 @@ const FormTextInput = ({ fieldName, label, ...props }) => {
                     onChangeText={field.onChange(fieldName)}
                     onBlur={field.onBlur(fieldName)}
                     keyboardType={type || "default"}
+                    editable={editable}
                 />
                 {error && <Icon name='close-circle' />}
                 {success && <Icon name='checkmark-circle' />}

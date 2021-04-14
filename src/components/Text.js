@@ -38,7 +38,7 @@ const Text = styled.Text`
         }
     }}
 
-    ${({ light, semi, bold, heavy }) => {
+    ${({ light, semi, bold, middleHeavy, heavy }) => {
         switch (true) {
             case light:
                 return `font-weight:200;`;

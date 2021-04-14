@@ -9,11 +9,11 @@ const Event = ({ event }) => {
 
     return (
         <>
-            <Text large center bold>{titre}</Text>
+            <Text title center bold>{titre}</Text>
             <Text medium center>{`${date.substr(8, 2)}/${date.substr(5, 2)}/${date.substr(0, 4)}`}</Text>
             <Text medium center>Inscriptions {nbEquipesInscrites} / {maxEquipes}</Text>
             {
-                placesRestantes <= 0 && <Text medium center color={"red"}>COMPLET</Text>
+                placesRestantes <= 0 && <Text medium center color={"red"} bold>COMPLET</Text>
             }
         </>
     )

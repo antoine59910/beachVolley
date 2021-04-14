@@ -1,84 +1,126 @@
-import React, { useEffect, useState } from 'react'
-import { Ionicons } from '@expo/vector-icons'
+import React, { useEffect, useState, useContext } from 'react'
 import styled from 'styled-components'
+import { Card, CardItem, Body } from 'native-base';
+import { AntDesign } from '@expo/vector-icons';
 
 import Text from '../Text'
-import Terrain from './Terrain'
+import { ROUGE, VERT, JAUNE } from '../Color'
+import { LIMITE_RESERVATION_PAR_FIELD } from '../../config/parameters'
+import { UserContext } from '../../context/UserContext';
 
-const Creneau = ({ date, hour, reservationsParHour }) => {
+const Creneau = ({ hour, onReservePress, onDeletePress, reservationsParHourParField, limiteReservationParDay }) => {
+    const [showBody, setShowBody] = useState(false)
+    const [alreadyRegistred, setAlreadyRegistred] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [terrains, setTerrains] = useState([])
-    const nombreTerrain = 3
 
-    //Création des terrains
+    const [user, setUser] = useContext(UserContext);
+
     useEffect(() => {
+        if (reservationsParHourParField)
+            if (reservationsParHourParField.filter(element => element.joueurId === user.uid).length !== 0)
+                setAlreadyRegistred(true)
+            else
+                setAlreadyRegistred(false)
+    }, [reservationsParHourParField])
+
+    const handleOnReservePress = (hour) => {
         setLoading(true)
-
-        setTerrains([])
-        for (let terrain = 1; terrain <= nombreTerrain; terrain++) {
-            const terrain =
-                < Terrain
-                    key={terrain}
-                    field={terrain}
-                    date={date}
-                    hour={hour}
-                    reservationsParHourParField={
-                        reservationsParHour ?
-                            reservationsParHour.filter(element => element.terrain == terrain)
-                            : null
-                    }
-                />;
-            setTerrains(prevState => [...prevState, terrain])
-        }
-
+        onReservePress(hour)
         setLoading(false)
-    }, [reservationsParHour])
+    }
 
     return (
-        <Item>
-            <ReservationHeader>
+        <Card>
+            <CardItem header bordered style={{ justifyContent: "space-evenly" }}>
+                <HourContainer onPress={() => showBody ? setShowBody(false) : setShowBody(true)}>
+                    {
+                        showBody ?
+                            <Text large><AntDesign name="caretup" size={24} color="black" />{` `}{`${hour}H - ${hour + 1}H`}</Text>
+                            : <Text large><AntDesign name="caretdown" size={24} color="black" />{` `}{`${hour}H - ${hour + 1}H`}</Text>
+                    }
+                    {
+                        reservationsParHourParField.length > 0 &&
+                        <Text color={JAUNE} medium>{`                  `}{`${reservationsParHourParField.length}/${LIMITE_RESERVATION_PAR_FIELD}`}</Text>
+                    }
 
-                <Hour>
-                    <Text center large><Ionicons name="time-outline" size={25} />{`${hour}h00 - ${hour + 1}h00`}</Text>
-                </Hour>
-            </ReservationHeader>
-            <ReservationBody>
-                {loading ? <Loading /> : terrains}
-            </ReservationBody>
-        </Item>
+                </HourContainer>
+
+                {
+
+                    alreadyRegistred ?
+                        <ButtonContainer color={VERT} onPress={() => onDeletePress(hour)}>
+                            <Text center medium color="white">Réservé</Text>
+                        </ButtonContainer>
+                        :
+                        reservationsParHourParField.length >= LIMITE_RESERVATION_PAR_FIELD ?
+                            <ButtonContainer color={ROUGE}>
+                                <Text center medium color="white">Complet</Text>
+                            </ButtonContainer>
+                            :
+                            <ButtonContainer onPress={() => handleOnReservePress(hour)} disabled={limiteReservationParDay}>
+                                <Text center medium>Réserver</Text>
+                            </ButtonContainer>
+                }
+
+            </CardItem>
+            {showBody && reservationsParHourParField.length > 0 &&
+                <CardItem>
+                    <Body>
+                        {
+                            !!reservationsParHourParField &&
+                            reservationsParHourParField.map(element =>
+                                <PlayerContainer key={element.joueurId}>
+                                    <ProfilePhoto
+                                        source={
+                                            element.profilePhotoUrl === "default" || element.profilePhotoUrl === "undefined"
+                                                ? require("../../../assets/defaultProfilePhoto.jpg")
+                                                : { uri: element.profilePhotoUrl }
+                                        }
+                                    />
+                                    <TextPlayerContainer>
+                                        <Text title>{element.joueur}</Text>
+                                        <Text medium color="gray">{element.niveau}</Text>
+                                    </TextPlayerContainer>
+                                </PlayerContainer>
+                            )
+                        }
+                    </Body>
+                </CardItem>
+            }
+        </Card>
     )
 }
 
 export default Creneau
 
-
-const Item = styled.View`
-    border-top-width : 1px;
+const HourContainer = styled.TouchableOpacity`
+    flex:2;
+    justify-content: space-evenly;
+    margin:auto;
+    border-radius: 10px;
+    height: 60px;
 `;
 
-const ReservationHeader = styled.View`
-    flex-direction : row;
-    justify-content: center;
+const ButtonContainer = styled.TouchableOpacity`
+    flex:1;
+    justify-content:center;
+    background-color:  ${props => props.color || JAUNE};
+    margin-left: 10px;
+    border-radius: 30px;
+    height: 50px;
+`;
+
+const PlayerContainer = styled.View`
+    flex-direction: row;
     align-items: center;
 `;
 
-const Hour = styled.View`
-    flex:1;
+const ProfilePhoto = styled.Image`
+    width: 75px;
+    height: 75px;
+    border-radius: 35px;
+    margin: 10px;
 `;
 
-const ReservationBody = styled.View`
-flex-direction : row;
+const TextPlayerContainer = styled.View`
 `;
-
-const TitreTerrain = styled.TouchableOpacity`
-    height: 30px;
-    border-radius: 15px;
-    background-color: #FBBC05;
-    justify-content: center;
-`;
-
-const Loading = styled.ActivityIndicator.attrs(props => ({
-    color: "#FBBC05",
-    size: "large",
-}))``;
-

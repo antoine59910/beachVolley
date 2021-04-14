@@ -31,11 +31,12 @@ const Firebase = {
             await db.collection('users').doc(uid).set({
                 username: user.username,
                 email: user.email,
+                level: user.level,
                 profilePhotoUrl,
                 uid,
             })
             if (user.profilePhoto) {
-                profilePhotoUrl = await Firebase.uploadProfiltePhoto(user.profilePhoto)
+                profilePhotoUrl = await Firebase.uploadProfilePhoto(user.profilePhoto)
             }
 
             delete user.password
@@ -43,10 +44,34 @@ const Firebase = {
 
         } catch (error) {
             console.log("error @createUser: ", error.message)
+            alert(error.message)
         }
     },
 
-    uploadProfiltePhoto: async (uri) => {
+    updateUser: async (user) => {
+
+        try {
+            let profilePhotoUrl = user.profilePhotoUrl
+
+            await db.collection('users').doc(user.uid).update({
+                username: user.username,
+                level: user.level,
+            })
+
+            if (user.profilePhoto) {
+                profilePhotoUrl = await Firebase.uploadProfilePhoto(user.profilePhoto)
+            }
+
+            return { ...user, profilePhotoUrl }
+
+        } catch (error) {
+            console.log("error @updateUser: ", error.message)
+            alert(error.message)
+            return false;
+        }
+    },
+
+    uploadProfilePhoto: async (uri) => {
         const uid = Firebase.getCurrentUser().uid;
         try {
             const photo = await Firebase.getBlob(uri)
@@ -133,19 +158,21 @@ const Firebase = {
         return firebase.auth().signInWithEmailAndPassword(email, password);
     },
 
-    setReservation: async (date, hour, field, player, userId) => {
+    setReservation: async (date, hour, field, player, userId, userProfilePhotoUrl, userLevel) => {
 
         const data = {
             date: date,
             heure: `${hour}`,
             terrain: `${field}`,
             joueur: `${player}`,
-            joueurId: `${userId}`
+            joueurId: `${userId}`,
+            profilePhotoUrl: `${userProfilePhotoUrl}`,
+            niveau: userLevel,
         }
 
         try {
             await db.collection(`reservations`)
-                .doc(`${date} - ${hour}h00 - terrain${field} - ${player}`)
+                .doc(`${date} - ${hour}h00 - ${field} - ${player}`)
                 .set(data)
         } catch (error) {
             console.log("Error @setReservation : ", error)
@@ -181,7 +208,7 @@ const Firebase = {
     deleteReservation: async (date, hour, field, player) => {
         try {
             await db.collection(`reservations`)
-                .doc(`${date} - ${hour}h00 - terrain${field} - ${player}`)
+                .doc(`${date} - ${hour}h00 - ${field} - ${player}`)
                 .delete()
         } catch (error) {
             console.log("Error @deleteReservation : ", error)
@@ -308,7 +335,8 @@ const Firebase = {
             equipe: equipe,
             profilePhotoUrl: user.profilePhotoUrl,
             inscrivantId: user.uid,
-            inscrivant: user.username
+            inscrivant: user.username,
+            inscrivantNiveau: user.level,
         }
 
         try {
@@ -374,7 +402,6 @@ const Firebase = {
             console.log('Error @getInscriptions : ', error)
         }
     },
-
 
 }
 

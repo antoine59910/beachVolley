@@ -3,9 +3,12 @@ import styled from 'styled-components'
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { FirebaseContext } from '../context/FireBaseContext';
 import { UserContext } from '../context/UserContext';
+import { Dimensions } from 'react-native'
+import { AntDesign } from '@expo/vector-icons';
+import { Content } from 'native-base';
+import { Card, CardItem } from 'native-base';
 
 import Text from '../components/Text'
-import InscribedTeams from '../components/events/InscribedTeams'
 import { ROUGE, VERT, JAUNE } from '../components/Color'
 
 const EventInscriptionScreen = ({ route }) => {
@@ -41,11 +44,12 @@ const EventInscriptionScreen = ({ route }) => {
 
     useEffect(() => {
         if (inscriptions)
-            inscriptions.map(inscription => {
-                console.log()
-                if (inscription.inscrivantId === user.uid)
-                    setAlreadySuscribed(true)
-            })
+            setAlreadySuscribed(false)
+        inscriptions.map(inscription => {
+            console.log()
+            if (inscription.inscrivantId === user.uid)
+                setAlreadySuscribed(true)
+        })
     }, [inscriptions])
 
     useEffect(() => {
@@ -54,32 +58,65 @@ const EventInscriptionScreen = ({ route }) => {
     }, [])
 
     return (
-        <Container>
-            <Text large center bold>{titre}</Text>
-            <Text medium center>{`${date.substr(8, 2)}/${date.substr(5, 2)}/${date.substr(0, 4)}`}</Text>
-            <Text medium center>Inscriptions {nbEquipesInscrites} / {maxEquipes}</Text>
-            {
-                placesRestantes <= 0 && <Text medium center color={"red"}>COMPLET</Text>
-            }
-            <Description>
-                <Text medium>{description}</Text>
-            </Description>
+        <>
+            <Container>
+                <PhotoContainer>
+                    <CloseModal onPress={() => navigation.goBack()}>
+                        <AntDesign name="closecircle" size={40} color="black" />
+                    </CloseModal>
+                    <Photo
+                        source={require("../../assets/eventPictureResized.jpg")}
+                    />
+                </PhotoContainer>
+                <BodyContainer>
+                    <Content padder>
+                        <TitleContainer>
+                            <Text title center bold color="white">{titre}</Text>
+                            <Text medium center color="white">{`${date.substr(8, 2)}/${date.substr(5, 2)}/${date.substr(0, 4)}`}</Text>
+                            <Text medium center color="white">Inscriptions {nbEquipesInscrites} / {maxEquipes}</Text>
+                        </TitleContainer>
 
-            <Text large center bold>Inscriptions</Text>
-            <TeamsContainer>
-                {
-                    inscriptions &&
-                    inscriptions.map((inscription) => (
-                        <InscriptionContainer
-                            key={inscription.id}
-                            onPress={() => onPressInscription(event, inscription)}
-                        >
-                            <InscribedTeams inscription={inscription} />
-                        </InscriptionContainer>
-                    ))
-                }
-            </TeamsContainer>
+                        <Description>
+                            <Text large heavy>A propos</Text>
+                            <Text medium>{description}</Text>
+                        </Description>
+                        <Text title center bold>Inscriptions</Text>
+                        <TeamsContainer>
+                            {
+                                inscriptions &&
+                                inscriptions.map((inscription) => (
+                                    <Card
+                                        key={inscription.id}
+                                    >
+                                        <CardTouchableOpacity onPress={() => onPressInscription(event, inscription)}>
+                                            <CardItem>
+                                                <ProfilePhoto
+                                                    source={
+                                                        inscription.profilePhotoUrl === "default" || inscription.profilePhotoUrl === "undefined"
+                                                            ? require("../../assets/defaultProfilePhoto.jpg")
+                                                            : { uri: inscription.profilePhotoUrl }
+                                                    }
+                                                />
 
+                                                <PlayerContainer>
+                                                    <Text medium color="gray">{inscription.inscrivantNiveau}</Text>
+                                                    {
+                                                        inscription &&
+                                                        inscription.equipe.map((joueur, index) =>
+                                                            <Text key={index} title>{joueur}</Text>
+                                                        )
+                                                    }
+                                                </PlayerContainer>
+                                            </CardItem>
+                                        </CardTouchableOpacity>
+                                    </Card>
+                                ))
+                            }
+                        </TeamsContainer>
+                    </Content>
+                </BodyContainer>
+
+            </Container >
             <ButtonValiderContainer>
                 <ButtonValider
                     onPress={() => onPressSInscrire(event)}
@@ -101,7 +138,7 @@ const EventInscriptionScreen = ({ route }) => {
                     {
                         (placesRestantes > 0 && !alreadySuscribed) ||
                             (placesRestantes > 0 && alreadySuscribed && isAdmin)
-                            ? <Text center large color={"white"}>S'inscrire</Text> :
+                            ? <Text center large>S'inscrire</Text> :
                             (alreadySuscribed && !isAdmin)
                                 ? <Text center large color={"white"}>Déjà inscrit</Text> :
                                 (placesRestantes <= 0 && isAdmin) ||
@@ -111,7 +148,7 @@ const EventInscriptionScreen = ({ route }) => {
                     }
                 </ButtonValider>
             </ButtonValiderContainer>
-        </Container >
+        </>
     )
 }
 
@@ -120,15 +157,45 @@ export default EventInscriptionScreen
 
 const Container = styled.ScrollView`
     flex: 1;
-    margin-top: 16px;
+`;
+
+const PhotoContainer = styled.View`
+`;
+
+const Photo = styled.Image`
+    height: ${432 * Dimensions.get('window').width / 750}px;
+    width: ${Dimensions.get('window').width}px;
+    z-index: -100;
+`;
+
+const CloseModal = styled.TouchableOpacity`
+    position : absolute;
+    top:20px;
+    right:20px;
+    background-color: white;
+    border-radius: 20px;
+`;
+
+const BodyContainer = styled.View`
+    background-color:white;
+    flex:1;
+    margin-top: -40px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+ `;
+
+const TitleContainer = styled.View`
+    background-color : ${JAUNE}
+    border-radius: 40px;
+    width:75%;
+    padding: 10px;
+    margin:auto;
+    margin-bottom: 30px;
+    margin-top: 20px;
 `;
 
 const Description = styled.View`
-    border-width: 0.75px;
-    border-radius: 25px;
-    padding : 15px;
-    margin : 5px;
-    background-color : white;
+    margin-bottom: 30px;
 `;
 
 const ButtonValiderContainer = styled.View`
@@ -137,6 +204,7 @@ const ButtonValiderContainer = styled.View`
     z-index: 1;
     width : 100%;
     border-width : 0.2px;
+    background-color: white;
 `
 const ButtonValider = styled.TouchableOpacity`
     margin: 10px;
@@ -150,9 +218,17 @@ const TeamsContainer = styled.View`
     margin-bottom: 100px;
 `;
 
-const InscriptionContainer = styled.TouchableOpacity`
-    border-width: 0.5px;
-    background-color: white;
-    padding: 15px;
+const CardTouchableOpacity = styled.TouchableOpacity`
+`;
+
+const PlayerContainer = styled.View`
+margin-left: 10px;
+`;
+
+const ProfilePhoto = styled.Image`
+    width: 75px;
+    height: 75px;
+    border-radius: 35px;
+    margin: 10px;
 `;
 

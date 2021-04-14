@@ -11,7 +11,7 @@ const LoadingScreen = () => {
 
     useEffect(() => {
         setTimeout(async () => {
-            const user = firebase.getCurrentUser()
+            const user = await firebase.getCurrentUser()
 
             if (user) {
                 const userInfo = await firebase.getUserInfo(user.uid)
@@ -21,8 +21,9 @@ const LoadingScreen = () => {
                     email: userInfo.email,
                     uid: user.uid,
                     username: userInfo.username,
-                    profilPhotoUrl: userInfo.profilPhotoUrl,
+                    profilePhotoUrl: userInfo.profilePhotoUrl,
                     authorization: userInfo.authorization,
+                    level: userInfo.level,
                 })
             }
             else {
