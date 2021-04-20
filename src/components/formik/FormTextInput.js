@@ -6,10 +6,9 @@ import Text from '../Text'
 
 const FormTextInput = ({ fieldName, label, ...props }) => {
     const [field, meta] = useField(fieldName);
-    const error = meta.error && meta.touched;
-    const success = !meta.error && meta.touched;
-
     const { type, editable } = props;
+    const error = meta.error && meta.touched
+    const success = !meta.error && meta.touched
 
     return (
         <>

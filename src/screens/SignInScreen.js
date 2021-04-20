@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react'
+import { SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native'
 import styled from 'styled-components'
 
 import { UserContext } from '../context/UserContext'
@@ -42,68 +43,74 @@ const SignInScreen = ({ navigation }) => {
     }
 
     return (
-        <Container>
-            <LogoContainer>
-                <Logo source={require('../../assets/logo.png')} />
-            </LogoContainer>
 
-            <Auth>
-                <AuthContainer>
-                    <AuthTitle>
-                        <Text>Adresse mail</Text>
-                    </AuthTitle>
-                    <AuthField
-                        autoCapitalize="none"
-                        autoCompleteType="email"
-                        autoCorrect={false}
-                        autofocus={true}
-                        keyboardType="email-address"
-                        onChangeText={(text) => setEmail(text.trim())}
-                        value={email}
-                    />
-                </AuthContainer>
+        <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <LogoContainer>
+                    <Logo source={require('../../assets/logo.png')} />
+                </LogoContainer>
 
-                <AuthContainer>
-                    <AuthTitle>
-                        <Text>Mot de passe</Text>
-                    </AuthTitle>
-                    <AuthField
-                        autoCapitalize="none"
-                        autoCompleteType="password"
-                        autoCorrect={false}
-                        secureTextEntry={true}
-                        onChangeText={(text) => setPassword(text.trim())}
-                        value={password}
-                    />
-                </AuthContainer>
-            </Auth>
+                <Auth>
+                    <AuthContainer>
+                        <AuthTitle>
+                            <Text>Adresse mail</Text>
+                        </AuthTitle>
+                        <AuthField
+                            autoCapitalize="none"
+                            autoCompleteType="email"
+                            autoCorrect={false}
+                            autofocus={true}
+                            keyboardType="email-address"
+                            onChangeText={(text) => setEmail(text.trim())}
+                            value={email}
+                        />
+                    </AuthContainer>
 
-            <SignInContainer onPress={signIn} disabled={loading}>
+                    <AuthContainer>
+                        <AuthTitle>
+                            <Text>Mot de passe</Text>
+                        </AuthTitle>
+                        <AuthField
+                            autoCapitalize="none"
+                            autoCompleteType="password"
+                            autoCorrect={false}
+                            secureTextEntry={true}
+                            onChangeText={(text) => setPassword(text.trim())}
+                            value={password}
+                        />
+                    </AuthContainer>
+                </Auth>
 
-                {loading ?
-                    (
-                        <Loading />
-                    ) : (
-                        <Text bold center color="white">
-                            Connexion
-                        </Text>
+                <SignInContainer onPress={signIn} disabled={loading}>
 
-                    )
-                }
+                    {loading ?
+                        (
+                            <Loading />
+                        ) : (
+                            <Text bold center color="white">
+                                Connexion
+                            </Text>
 
-            </SignInContainer>
+                        )
+                    }
 
-            <SignUp onPress={() => navigation.navigate('SignUp')}>
-                <Text small center>
-                    Pas encore inscrit ?{"  "}
-                    <Text bold color="#FBBC05">
-                        Inscription
+                </SignInContainer>
+
+                <SignUp onPress={() => navigation.navigate('SignUp')}>
+                    <Text small center>
+                        Pas encore inscrit ?{"  "}
+                        <Text bold color="#FBBC05">
+                            Inscription
                     </Text>
-                </Text>
-            </SignUp>
-
+                    </Text>
+                </SignUp>
+            </KeyboardAvoidingView>
             <StatusBar barStyle="light-content" />
-        </Container>
+
+        </SafeAreaView>
     )
 }
 

@@ -1,18 +1,15 @@
 import React, { useState, useContext } from 'react'
-import { Modal } from 'react-native'
-import { Platform } from 'react-native'
+import { Modal, SafeAreaView, Platform, KeyboardAvoidingView } from 'react-native'
 import styled from 'styled-components'
-import { AntDesign } from '@expo/vector-icons'
-import { Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from 'expo-image-picker'
-import { Form, Item, Picker } from 'native-base';
+import { Form, Item, Picker, Content } from 'native-base';
 
 import { FirebaseContext } from '../context/FireBaseContext'
 import { UserContext } from '../context/UserContext'
-import { ROUGE } from '../components/Color'
-
 import Text from '../components/Text'
+import LevelsExplication from '../components/profile/LevelsExplication'
 
 const SignUpScreen = ({ navigation }) => {
 
@@ -85,167 +82,137 @@ const SignUpScreen = ({ navigation }) => {
         setLevel(value)
     }
 
-    const handleOnPressInformationLevel = () => {
-        setShowModal(true)
-    }
-
     return (
-        <>
-            <Container>
+        <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView style={{ flex: 1 }}>
+                <Container>
 
-                <Main>
-                    <Text title semi center>
-                        Inscription
+                    <Main>
+                        <Text title semi center>
+                            Inscription
                 </Text>
 
-                </Main>
-                <ProfilePhotoTitle>
-                    <Text large light center >AVATAR</Text>
-                </ProfilePhotoTitle>
-                <ProfilePhotoContainer onPress={addProfilePhoto}>
+                    </Main>
+                    <ProfilePhotoTitle>
+                        <Text large light center >AVATAR</Text>
+                    </ProfilePhotoTitle>
+                    <ProfilePhotoContainer onPress={addProfilePhoto}>
 
-                    {
-                        profilePhoto ? (
-                            <ProfilePhoto source={{ uri: profilePhoto }} />
-                        ) : (
-                            <DefaultProfilePhoto>
+                        {
+                            profilePhoto ? (
+                                <ProfilePhoto source={{ uri: profilePhoto }} />
+                            ) : (
+                                <DefaultProfilePhoto>
 
-                                <AntDesign name="plus" size={24} color="white" />
-                            </DefaultProfilePhoto>
-                        )
-                    }
-                </ProfilePhotoContainer>
+                                    <AntDesign name="plus" size={24} color="white" />
+                                </DefaultProfilePhoto>
+                            )
+                        }
+                    </ProfilePhotoContainer>
 
-                <Auth>
-                    <AuthContainer>
-                        <AuthTitle>
-                            <Text>Adresse mail</Text>
-                        </AuthTitle>
-                        <AuthField
-                            autoCapitalize="none"
-                            autoCompleteType="email"
-                            autoCorrect={false}
-                            keyboardType="email-address"
-                            onChangeText={(text) => setEmail(text.trim())}
-                            value={email}
-                        />
-                    </AuthContainer>
-
-                    <AuthContainer>
-                        <AuthTitle>
-                            <Text>Mot de passe</Text>
-                        </AuthTitle>
-                        <AuthField
-                            autoCapitalize="none" //N'écrit pas la première lettre en majuscule
-                            autoCompleteType="password"
-                            autoCorrect={false}
-                            secureTextEntry={true}
-                            onChangeText={(text) => setPassword(text.trim())}
-                            value={password}
-                        />
-                    </AuthContainer>
-
-                    <AuthContainer>
-                        <AuthTitle>
-                            <Text>Nom utilisateur</Text>
-                        </AuthTitle>
-                        <AuthField
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            autofocus={true}
-                            onChangeText={(username) => setUsername(username.trim())}
-                            value={username}
-                        />
-                    </AuthContainer>
-
-                    <AuthContainer>
-                        <InformationTouchableOpacity onPress={handleOnPressInformationLevel}>
+                    <Auth>
+                        <AuthContainer>
                             <AuthTitle>
-                                <Text><Ionicons name="information-circle-outline" size={24} color="black" />{` Niveau`}</Text>
+                                <Text>Adresse mail</Text>
                             </AuthTitle>
-                        </InformationTouchableOpacity>
+                            <AuthField
+                                autoCapitalize="none"
+                                autoCompleteType="email"
+                                autoCorrect={false}
+                                keyboardType="email-address"
+                                onChangeText={(text) => setEmail(text.trim())}
+                                value={email}
+                            />
+                        </AuthContainer>
 
-                        <Form>
-                            <Item picker>
-                                <Picker
-                                    mode="dropdown"
-                                    iosIcon={<AntDesign name="caretdown" size={24} color="black" />}
-                                    placeholder="Niveau"
-                                    placeholderStyle={{ color: "#bfc6ea" }}
-                                    placeholderIconColor="#007aff"
-                                    selectedValue={level}
-                                    onValueChange={onChangeLevel}
-                                >
-                                    <Picker.Item label="Débutant" value="débutant" />
-                                    <Picker.Item label="Intérmédiaire" value="intermédiaire" />
-                                    <Picker.Item label="Confirmé" value="confirmé" />
-                                </Picker>
-                            </Item>
-                        </Form>
-                    </AuthContainer>
+                        <AuthContainer>
+                            <AuthTitle>
+                                <Text>Mot de passe</Text>
+                            </AuthTitle>
+                            <AuthField
+                                autoCapitalize="none" //N'écrit pas la première lettre en majuscule
+                                autoCompleteType="password"
+                                autoCorrect={false}
+                                secureTextEntry={true}
+                                onChangeText={(text) => setPassword(text.trim())}
+                                value={password}
+                            />
+                        </AuthContainer>
 
-                </Auth>
+                        <AuthContainer>
+                            <AuthTitle>
+                                <Text>Nom utilisateur</Text>
+                            </AuthTitle>
+                            <AuthField
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                autofocus={true}
+                                onChangeText={(username) => setUsername(username.trim())}
+                                value={username}
+                            />
+                        </AuthContainer>
 
-                <SignUpContainer onPress={signUp} disabled={loading}>
-                    {loading ?
-                        (
-                            <Loading />
-                        ) : (
-                            <Text bold center color="white">
-                                S'enregistrer
-                            </Text>
+                        <AuthContainer>
+                            <InformationTouchableOpacity onPress={() => setShowModal(true)}>
+                                <AuthTitle>
+                                    <Text><Ionicons name="information-circle-outline" size={24} color="black" />{` Niveau`}</Text>
+                                </AuthTitle>
+                            </InformationTouchableOpacity>
 
-                        )
-                    }
+                            <Form>
+                                <Item picker>
+                                    <Picker
+                                        mode="dropdown"
+                                        iosIcon={<AntDesign name="caretdown" size={24} color="black" />}
+                                        placeholder="Niveau"
+                                        placeholderStyle={{ color: "#bfc6ea" }}
+                                        placeholderIconColor="#007aff"
+                                        selectedValue={level}
+                                        onValueChange={onChangeLevel}
+                                    >
+                                        <Picker.Item label="Débutant" value="débutant" />
+                                        <Picker.Item label="Intérmédiaire" value="intermédiaire" />
+                                        <Picker.Item label="Confirmé" value="confirmé" />
+                                        <Picker.Item label="Avancé" value="avancé" />
+                                        <Picker.Item label="Expert" value="expert" />
+                                    </Picker>
+                                </Item>
+                            </Form>
+                        </AuthContainer>
 
-                </SignUpContainer>
+                    </Auth>
 
-                <SignIn onPress={() => navigation.navigate('SignIn')}>
-                    <Text small center>
-                        Déjà inscrit ?{"  "}
-                        <Text bold color="#FBBC05">
-                            Connexion
+                    <SignUpContainer onPress={signUp} disabled={loading}>
+                        {loading ?
+                            (
+                                <Loading />
+                            ) : (
+                                <Text bold center color="white">
+                                    S'enregistrer
+                                </Text>
+
+                            )
+                        }
+
+                    </SignUpContainer>
+
+                    <SignIn onPress={() => navigation.navigate('SignIn')}>
+                        <Text small center>
+                            Déjà inscrit ?{"  "}
+                            <Text bold color="#FBBC05">
+                                Connexion
                     </Text>
-                    </Text>
-                </SignIn>
+                        </Text>
+                    </SignIn>
 
-                <StatusBar barStyle="light-content" />
-            </Container>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={showModal}
-                onRequestClose={() => {
-                    Alert.alert("Modal has been closed.");
-                    setShowModal(!showModal);
-                }}
-            >
-                <CenteredView>
-                    <ModalView>
-                        <CloseModal onPress={() => setShowModal(false)}>
-                            <AntDesign name="closecircle" size={30} color="black" />
-                        </CloseModal>
-                        <Text bold large center>Débutant :</Text>
-                        <Text medium>Découvre le beach-volley ou</Text>
-                        <Text medium>Joue en salle en départemental ou en loisir</Text>
-
-                        <Text>{
-                        }</Text>
-
-                        <Text bold large center>Intermédiaire :</Text>
-                        <Text medium>2 ans d'expérience en beach-volley ou</Text>
-                        <Text medium>Joue en salle de la régionale jusqu'en prénationale</Text>
-
-                        <Text>{
-                        }</Text>
-
-                        <Text bold large center>Confirmé :</Text>
-                        <Text medium>5 ans d'expérience en beach-volley ou</Text>
-                        <Text medium>Joue en salle en nationale 3 et plus</Text>
-                    </ModalView>
-                </CenteredView>
-            </Modal>
-        </>
+                    <StatusBar barStyle="light-content" />
+                </Container>
+                <LevelsExplication
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                />
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     )
 }
 
@@ -329,24 +296,3 @@ const SignIn = styled.TouchableOpacity`
 
 const StatusBar = styled.StatusBar``;
 
-const CenteredView = styled.View`
-    flex: 1;
-    justifyContent: center;
-    alignItems: center;
-    marginTop: 22px;
-`;
-
-const ModalView = styled.View`
-    margin: 20px;
-    backgroundColor: white;
-    borderRadius: 20px;
-    border-width: 2px;
-    padding: 35px;
-    shadowColor: #000;
-`;
-
-const CloseModal = styled.TouchableOpacity`
-    position : absolute;
-    top:10px;
-    right:10px;
-`;

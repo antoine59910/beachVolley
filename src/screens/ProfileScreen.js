@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
+import { Dimensions, SafeAreaView } from 'react-native';
 import styled from 'styled-components'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import openMap from 'react-native-open-maps';
-import { Dimensions } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 
 import { UserContext } from '../context/UserContext';
@@ -38,64 +38,66 @@ const ProfileScreen = () => {
     }
 
     return (
-        <Container>
-            <ProfilePhotoContainer>
-                <ProfilePhoto
-                    source={
-                        user.profilePhotoUrl === "default"
-                            ? require("../../assets/defaultProfilePhoto.jpg")
-                            : { uri: user.profilePhotoUrl }
-                    }
-                />
-            </ProfilePhotoContainer>
-            <Text large bold margin="16px">
-                {user.username}
-            </Text>
-            <Text medium bold margin="0 0 16px 0">
-                Niveau : {user.level}
-            </Text>
-            <ModifyProfil onPress={handleOnModifyProfilPress}>
-                <Text medium bold>
-                    Modifier le profil
-                </Text>
-            </ModifyProfil>
-            <MainContainer>
-                <GoogleMapButton onPress={goToBeachClub}>
-                    <GoogleMapImage source={require("../../assets/googleMaps.png")} />
-                </GoogleMapButton>
-                <MapView
-                    provider={PROVIDER_GOOGLE}
-                    style={{
-                        height: "100%",
-                        width: Dimensions.get('window').width,
-                    }}
-                    initialRegion={{
-                        latitude: 43.9674698,
-                        longitude: 4.8314312,
-                        latitudeDelta: 0.0622,
-                        longitudeDelta: 0.0621,
-                    }}
-                >
-                    <Marker
-                        coordinate={
-                            {
-                                latitude: 43.967467,
-                                longitude: 4.831532,
-                            }
+        <SafeAreaView style={{ flex: 1 }}>
+            <Container>
+                <ProfilePhotoContainer>
+                    <ProfilePhoto
+                        source={
+                            user.profilePhotoUrl === "default"
+                                ? require("../../assets/defaultProfilePhoto.jpg")
+                                : { uri: user.profilePhotoUrl }
                         }
-                        title={"Beach Volley Vaucluse"}
-                        description={"Club de beach volley"}
-
                     />
-                </MapView>
-            </MainContainer>
-
-            <Logout onPress={logOut}>
-                <Text medium bold>
-                    Se déconnecter
+                </ProfilePhotoContainer>
+                <Text large bold margin="16px">
+                    {user.username}
                 </Text>
-            </Logout>
-        </Container>
+                <Text medium bold margin="0 0 16px 0">
+                    Niveau : {user.level}
+                </Text>
+                <ModifyProfil onPress={handleOnModifyProfilPress}>
+                    <Text medium bold>
+                        Modifier mon profil
+                </Text>
+                </ModifyProfil>
+                <MainContainer>
+                    <GoogleMapButton onPress={goToBeachClub}>
+                        <GoogleMapImage source={require("../../assets/googleMaps.png")} />
+                    </GoogleMapButton>
+                    <MapView
+                        provider={PROVIDER_GOOGLE}
+                        style={{
+                            height: "100%",
+                            width: Dimensions.get('window').width,
+                        }}
+                        initialRegion={{
+                            latitude: 43.9674698,
+                            longitude: 4.8314312,
+                            latitudeDelta: 0.0622,
+                            longitudeDelta: 0.0621,
+                        }}
+                    >
+                        <Marker
+                            coordinate={
+                                {
+                                    latitude: 43.967467,
+                                    longitude: 4.831532,
+                                }
+                            }
+                            title={"Beach Volley Vaucluse"}
+                            description={"Club de beach volley"}
+
+                        />
+                    </MapView>
+                </MainContainer>
+
+                <Logout onPress={logOut}>
+                    <Text medium bold>
+                        Se déconnecter
+                </Text>
+                </Logout>
+            </Container>
+        </SafeAreaView>
     )
 }
 

@@ -2,41 +2,48 @@ import React from 'react'
 import styled from 'styled-components'
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Text from '../components/Text'
+import { JAUNE } from '../components/Color'
 
 const Administrator = ({ navigation }) => {
 
-    const onUsersButtonPress = () => {
-        navigation.navigate('usersManagment')
-    }
-
-    const onEventssButtonPress = () => {
-        navigation.navigate('eventsManagment')
-    }
-
     return (
-        <Container>
-            <Title>
-                <Text title center semi>Administration</Text>
-            </Title>
-            <ButtonsContainer>
-                <UsersButton onPress={onUsersButtonPress}>
-                    <Text title center color={"white"}>
-                        <Ionicons name="people-sharp" size={40} color="white" />
-                        {"   "}utilisateurs
+        <SafeAreaView style={{ flex: 1 }}>
+            <Container>
+                <Title>
+                    <Text title center semi>Administration</Text>
+                </Title>
+                <ButtonsContainer>
+                    <Button onPress={() => navigation.navigate('usersManagment')}>
+                        <Text title>
+                            {"   "}
+                            <Ionicons name="people-sharp" size={40} color="black" />
+                            {"   "}utilisateurs
                     </Text>
-                </UsersButton>
-                <EventsButton onPress={onEventssButtonPress}>
-                    <Text title center color={"white"}>
-                        <FontAwesome name="trophy" size={40} color="white" />
-                        {"   "}évènements
+                    </Button>
+                    <Button onPress={() => navigation.navigate('eventsManagment')}>
+                        <Text title >
+                            {"   "}
+                            <FontAwesome name="trophy" size={40} color="black" />
+                            {"   "}évènements
 
                     </Text>
-                </EventsButton>
-            </ButtonsContainer>
+                    </Button>
+                    <Button onPress={() => navigation.navigate('fieldsManagment')}>
+                        <Text title >
+                            {"   "}
+                            <MaterialCommunityIcons name="soccer-field" size={40} color="black" />
+                            {"   "}terrains
 
-        </Container>
+                    </Text>
+                    </Button>
+                </ButtonsContainer>
+
+            </Container>
+        </SafeAreaView>
     )
 }
 
@@ -47,7 +54,7 @@ const Container = styled.View`
 `;
 
 const Title = styled.View`
-    background-color: #FBBC05; 
+    background-color: ${JAUNE}; 
 `;
 
 const ButtonsContainer = styled.View`
@@ -56,21 +63,11 @@ const ButtonsContainer = styled.View`
     align-items: center;
 `;
 
-const UsersButton = styled.TouchableOpacity`
-    background-color: #FBBC05;
+const Button = styled.TouchableOpacity`
+    background-color: ${JAUNE};
     width : 80%;
     height: 50px;
     border-radius: 25px;
     justify-content: space-evenly;
-    align-items: center;
-`;
-
-const EventsButton = styled.TouchableOpacity`
-    background-color: #FBBC05;
-    width : 80%;
-    height: 50px;
-    border-radius: 25px;
-    justify-content: space-evenly;
-    align-items: center;
 `;
 

@@ -1,10 +1,11 @@
 import React, { createContext } from "react"
+import { uid } from 'uid';
+import moment from 'moment';
 import config from '../config/firebase'
 import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/firestore'
-import { uid } from 'uid';
-import moment from 'moment';
+
 
 const FirebaseContext = createContext()
 
@@ -16,7 +17,7 @@ if (!firebase.apps.length) {
 const db = firebase.firestore()
 
 const Firebase = {
-    //Ecrire les fonctions ici
+
     getCurrentUser: () => {
         return firebase.auth().currentUser
     },
@@ -125,7 +126,9 @@ const Firebase = {
         let users = [];
 
         try {
-            const snapshot = await db.collection("users").get();
+            const snapshot = await db.collection("users")
+                .orderBy('authorization', 'asc')
+                .get();
 
             if (snapshot.empty) {
                 return null;
@@ -159,6 +162,10 @@ const Firebase = {
     },
 
     setReservation: async (date, hour, field, player, userId, userProfilePhotoUrl, userLevel) => {
+        /*
+            On s'inscrit puis on incrémente le compteur d'inscription du jour
+        */
+        const reservationTime = Date()
 
         const data = {
             date: date,
@@ -168,14 +175,41 @@ const Firebase = {
             joueurId: `${userId}`,
             profilePhotoUrl: `${userProfilePhotoUrl}`,
             niveau: userLevel,
+            dateAuMomentDeLaReservation: reservationTime,
         }
 
+        //Inscription
         try {
             await db.collection(`reservations`)
                 .doc(`${date} - ${hour}h00 - ${field} - ${player}`)
                 .set(data)
         } catch (error) {
             console.log("Error @setReservation : ", error)
+            return false;
+        }
+
+        //Incrément du compteur : récupération de la valeur puis update avec +1
+        try {
+            await db.collection(`compteur-reservations`)
+                .doc(`${date}`)
+                .get()
+                .then(documentSnapshot => {
+
+                    //incrément
+                    if (documentSnapshot.exists) {
+                        db.collection(`compteur-reservations`)
+                            .doc(`${date}`)
+                            .update({ nombreReservations: documentSnapshot.data().nombreReservations + 1 })
+                    }
+                    //Création du compteur
+                    else
+                        db.collection(`compteur-reservations`)
+                            .doc(`${date}`)
+                            .set({ nombreReservations: 1 })
+                })
+
+        } catch (error) {
+            console.log("Error @setReservationcompteur : ", error)
             return false;
         }
         return true;
@@ -187,6 +221,7 @@ const Firebase = {
         try {
             const snapshot = await db.collection(`reservations`)
                 .where('date', '==', date)
+                .orderBy('dateAuMomentDeLaReservation', 'asc')
                 .get();
 
             if (snapshot.empty) {
@@ -214,6 +249,24 @@ const Firebase = {
             console.log("Error @deleteReservation : ", error)
             return false;
         }
+        try {
+            await db.collection(`compteur-reservations`)
+                .doc(`${date}`)
+                .get()
+                .then(documentSnapshot => {
+                    //décrement compteur
+                    if (documentSnapshot.exists) {
+                        db.collection(`compteur-reservations`)
+                            .doc(`${date}`)
+                            .update({ nombreReservations: documentSnapshot.data().nombreReservations - 1 })
+                    }
+                })
+
+        } catch (error) {
+            console.log("Error @deleteReservationcompteur : ", error)
+            return false;
+        }
+
         return true;
     },
 
@@ -278,8 +331,6 @@ const Firebase = {
     },
 
     updateEvent: async (eventId, newEvent) => {
-        console.log(eventId)
-        console.log(newEvent)
         try {
             await db.collection('evenements').doc(eventId).update(newEvent);
         } catch (error) {
@@ -295,7 +346,7 @@ const Firebase = {
         try {
             const snapshot = await db.collection("evenements")
                 .where('date', '>=', today)
-                .orderBy('date', 'desc')
+                .orderBy('date', 'asc')
                 .get();
 
             if (snapshot.empty) {
@@ -329,6 +380,7 @@ const Firebase = {
 
     setInscription: async (eventId, equipe, user) => {
         const inscriptionId = uid()
+        const date = Date()
 
         const inscription = {
             id: inscriptionId,
@@ -337,6 +389,7 @@ const Firebase = {
             inscrivantId: user.uid,
             inscrivant: user.username,
             inscrivantNiveau: user.level,
+            date,
         }
 
         try {
@@ -352,9 +405,11 @@ const Firebase = {
 
     updateInscription: async (eventId, equipe, equipeId) => {
         const inscriptionId = inscriptionId
+        const date = Date()
 
         const inscription = {
             equipe: equipe,
+            date: date,
         }
 
         try {
@@ -386,6 +441,7 @@ const Firebase = {
 
         try {
             const snapshot = await db.collection("evenements").doc(eventId).collection("equipes")
+                .orderBy("date", "desc")
                 .get();
 
             if (snapshot.empty) {
@@ -403,6 +459,92 @@ const Firebase = {
         }
     },
 
+    setBlocage: async (dateDeBlocage, terrain1, terrain2, terrain3) => {
+        const id = uid()
+        const date = Date()
+
+        const blocage = {
+            id,
+            dateAuMomentDuBlocage: date,
+            dateDeBlocage,
+            terrain1,
+            terrain2,
+            terrain3
+        }
+
+        try {
+            await db.collection('blocage').doc(id)
+                .set(blocage);
+        } catch (error) {
+            console.log("Error @setBlocage : ", error)
+            return false;
+        }
+
+        return true;
+    },
+
+    getBlocages: async () => {
+        let blocages = [];
+        const today = moment().format('YYYY-MM-DD')
+
+        try {
+            const snapshot = await db.collection("blocage")
+                .where('dateDeBlocage', '>=', today)
+                .orderBy('dateDeBlocage', 'asc')
+                .get();
+
+            if (snapshot.empty) {
+                return null;
+            }
+
+
+            snapshot.forEach(event => {
+                blocages.push(event.data())
+            }
+            )
+
+            return blocages;
+
+        } catch (error) {
+            console.log('Error @getBlocages : ', error)
+        }
+    },
+
+    getBlocage: async (date) => {
+        let blocages = [];
+
+        try {
+            const snapshot = await db.collection("blocage")
+                .where('dateDeBlocage', '==', date)
+                .get();
+
+            if (snapshot.empty) {
+                return null;
+            }
+
+            snapshot.forEach(event => {
+                blocages.push(event.data())
+            }
+            )
+
+            return blocages;
+
+        } catch (error) {
+            console.log('Error @getBlocages : ', error)
+        }
+    },
+
+    deleteBlocage: async (id) => {
+        try {
+            await db.collection(`blocage`)
+                .doc(id)
+                .delete()
+        } catch (error) {
+            console.log("Error @deleteBlocage : ", error)
+            return false;
+        }
+        return true;
+    },
 }
 
 const FirebaseProvider = (props) => {

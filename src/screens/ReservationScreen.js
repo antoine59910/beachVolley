@@ -1,35 +1,96 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { Modal, SafeAreaView } from 'react-native'
 import styled from 'styled-components'
-import Text from '../components/Text'
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { Content } from 'native-base';
-import { Modal } from 'react-native'
 import moment from 'moment';
 import { AntDesign } from '@expo/vector-icons';
-import { Card, CardItem } from 'native-base';
+import { Card, CardItem, Content } from 'native-base';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import { UserContext } from '../context/UserContext';
 import Creneau from '../components/reservations/Creneau';
 import { ROUGE, VERT, JAUNE } from '../components/Color'
 import { MINHOUR, MAXHOUR, LIMITE_RESERVATION_PAR_DAY, MIN_DAYS_RESERVATION, MAX_DAYS_RESERVATION } from '../config/parameters'
+import Text from '../components/Text'
+import { TERRAINS } from '../config/parameters'
 
+import firebase from 'firebase'
+import 'firebase/firestore'
+
+const db = firebase.firestore()
 
 const ReservationScreen = () => {
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
-    const [selectedField, setSelectedField] = useState("terrain 1");
+    const [selectedField, setSelectedField] = useState("Terrain 1");
     const [reservations, setReservations] = useState();
     const [reservationsParField, setReservationsParField] = useState();
     const [loading, setLoading] = useState(false);
     const [creneaux, setCreneaux] = useState([]);
     const [onReservation, setOnReservation] = useState([]);
     const [limiteReservationParDay, setLimiteReservationParDay] = useState();
+    const [blocages, setBlocages] = useState([]);
+    const [blocked, setBlocked] = useState([]);
+    const [reservationsCounterListener, setReservationsCounterListener] = useState()
 
     const [user, setUser] = useContext(UserContext);
     const firebase = useContext(FirebaseContext);
 
+    //MAJ temps réel si qqun fait une réservation
+    useEffect(() => {
+        const unscubscribe = db.collection('compteur-reservations')
+            .doc(selectedDate)
+            .onSnapshot((snapshot) => {
+                if (snapshot.exists)
+                    setReservationsCounterListener(snapshot.data())
+            })
+
+        return () => {
+            unscubscribe()
+        }
+    }, [selectedDate])
+
+    //Récupération des blocages au changement de date
+    useEffect(() => {
+        const getBlocage = async () => {
+            if (selectedDate) {
+                setBlocages(await firebase.getBlocage(selectedDate))
+            }
+        }
+
+        getBlocage()
+    }, [selectedDate])
+
+    //Mise à jour du blocage en cas de changement
+    useEffect(() => {
+        setBlocked(false)
+
+        if (blocages)
+            blocages.map(
+                (blocage, index) => {
+                    switch (selectedField) {
+                        case TERRAINS[0]:
+                            if (blocage.terrain1)
+                                setBlocked(true)
+                            break;
+
+                        case TERRAINS[1]:
+                            if (blocage.terrain2)
+                                setBlocked(true)
+                            break;
+
+                        case TERRAINS[2]:
+                            if (blocage.terrain3)
+                                setBlocked(true)
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            )
+    }, [selectedField, blocages])
 
     //Compte du nombre de réservations
     useEffect(() => {
@@ -45,7 +106,7 @@ const ReservationScreen = () => {
 
     //Lors d'un changement de date : Récupération des réservations
     useEffect(() => {
-        // console.log("selectedDate", selectedDate)
+
         const getReservationsOfTheDay = async () => {
             setLoading(true)
             setReservations(await firebase.getReservations(selectedDate))
@@ -53,11 +114,11 @@ const ReservationScreen = () => {
         }
 
         getReservationsOfTheDay()
-    }, [selectedDate, onReservation])
+    }, [selectedDate, onReservation, reservationsCounterListener])
 
     //Quand changement de réservations : Filtre des résas en fonction du terrain
     useEffect(() => {
-        // console.log("reservations", reservations)
+
         if (reservations) {
             setReservationsParField(reservations.filter(element => element.terrain == selectedField))
         }
@@ -69,14 +130,14 @@ const ReservationScreen = () => {
 
     //Lors d'un changement de terrain : filtre des réservations par terrain
     useEffect(() => {
-        // console.log("selectedField", selectedField)
+
         if (reservations)
             setReservationsParField(reservations.filter(element => element.terrain == selectedField))
     }, [selectedField])
 
     //Création/MAJ des créneaux : chgmnt de terrain ou les réservations ont étaient modifiées
     useEffect(() => {
-        // console.log("reservationsParField", reservationsParField)
+
         if (reservationsParField) {
             setCreneaux([])
             for (let hour = MINHOUR; hour <= MAXHOUR; hour++) {
@@ -87,6 +148,7 @@ const ReservationScreen = () => {
                     onDeletePress={onDeletePress}
                     limiteReservationParDay={limiteReservationParDay}
                     reservationsParHourParField={reservationsParField.filter(element => element.heure == hour)}
+                    blocked={blocked}
                 />
                 setCreneaux(prevState => [...prevState, creneau])
             }
@@ -100,11 +162,12 @@ const ReservationScreen = () => {
                     onReservePress={onReservePress}
                     onDeletePress={onDeletePress}
                     reservationsParHourParField={[]}
+                    blocked={blocked}
                 />
                 setCreneaux(prevState => [...prevState, creneau])
             }
         }
-    }, [reservationsParField, selectedField])
+    }, [reservationsParField, selectedField, blocked])
 
     //Lors d'un appui sur une date du calendrier
     const onDayPress = dateSelected => {
@@ -114,12 +177,12 @@ const ReservationScreen = () => {
         setLoading(false);
     };
 
-    //Lors d'un appui sur un Terrain
+    //Lors d'un appui sur un Terrain, on change le terrain sélectionné
     const onFieldPress = (field) => {
         setSelectedField(field);
     }
 
-    //Lors d'un appui pour réserver
+    //Lors d'un appui pour réserver, on stock en BDD la réservation
     const onReservePress = async (hour) => {
         const successOnCreateReservation = await firebase.setReservation(selectedDate, hour, selectedField, user.username, user.uid, user.profilePhotoUrl, user.level);
 
@@ -130,8 +193,8 @@ const ReservationScreen = () => {
             setOnReservation(!onReservation)
     }
 
+    //Lors d'un appui pour supprimé, on détruit la réservation en BDD
     const onDeletePress = async (hour) => {
-        // console.log("OnDeletePress")
         const successOnDeleteReservation = await firebase.deleteReservation(selectedDate, hour, selectedField, user.username)
         if (!successOnDeleteReservation)
             alert("Problème lors de la suppression de la réservation")
@@ -140,7 +203,7 @@ const ReservationScreen = () => {
     }
 
     return (
-        <>
+        <SafeAreaView style={{ flex: 1 }}>
             <Content padder>
                 {
                     user.authorization ?
@@ -163,29 +226,20 @@ const ReservationScreen = () => {
                                 </TopHeader>
                                 <BottomHeader>
                                     <FieldsContainer>
-                                        <Field
-                                            color={selectedField === "terrain 1" ? VERT : JAUNE}
-                                            onPress={() => onFieldPress("terrain 1")}
-                                            disabled={selectedField === "terrain 1" || loading}
-                                        >
-                                            <Text color={selectedField === "terrain 1" ? "white" : null} medium>Terrain 1</Text>
-                                        </Field>
-
-                                        <Field
-                                            color={selectedField === "terrain 2" ? VERT : JAUNE}
-                                            onPress={() => onFieldPress("terrain 2")}
-                                            disabled={selectedField === "terrain 2" || loading}
-                                        >
-                                            <Text color={selectedField === "terrain 2" ? "white" : null} medium>Terrain 2</Text>
-                                        </Field>
-
-                                        <Field color={selectedField === "terrain 3" ? VERT : JAUNE}
-                                            onPress={() => onFieldPress("terrain 3")}
-                                            disabled={selectedField === "terrain 3" || loading}
-                                        >
-                                            <Text color={selectedField === "terrain 3" ? "white" : null} medium>Terrain 3</Text>
-                                        </Field>
-
+                                        {
+                                            TERRAINS.map(terrain => {
+                                                return (
+                                                    <Field
+                                                        color={selectedField === terrain ? VERT : JAUNE}
+                                                        onPress={() => onFieldPress(terrain)}
+                                                        disabled={selectedField === terrain || loading}
+                                                        key={terrain}
+                                                    >
+                                                        <Text color={selectedField === terrain ? "white" : null} medium>{terrain}</Text>
+                                                    </Field>
+                                                )
+                                            })
+                                        }
                                     </FieldsContainer>
                                 </BottomHeader>
                                 {
@@ -224,25 +278,43 @@ const ReservationScreen = () => {
                         <CloseModal onPress={() => setShowCalendar(false)}>
                             <AntDesign name="closecircle" size={30} color="black" />
                         </CloseModal>
-                        <Calendar
-                            minDate={moment().add(MIN_DAYS_RESERVATION, 'days').format("YYYY-MM-DD")}
-                            maxDate={moment().add(MAX_DAYS_RESERVATION, 'days').format("YYYY-MM-DD")}
-                            onDayPress={onDayPress}
-                            firstDay={1}
-                            enableSwipeMonths={true}
-                            markedDates={{
-                                [selectedDate]: {
-                                    selected: true,
-                                    disableTouchEvent: true,
-                                    selectedColor: '#FBBC05',
-                                    selectedTextColor: 'white'
-                                }
-                            }}
-                        />
+                        {
+                            user.authorization === "administrator" ?
+                                <Calendar
+                                    maxDate={moment().add(MAX_DAYS_RESERVATION, 'days').format("YYYY-MM-DD")}
+                                    onDayPress={onDayPress}
+                                    firstDay={1}
+                                    enableSwipeMonths={true}
+                                    markedDates={{
+                                        [selectedDate]: {
+                                            selected: true,
+                                            disableTouchEvent: true,
+                                            selectedColor: '#FBBC05',
+                                            selectedTextColor: 'white'
+                                        }
+                                    }}
+                                />
+                                : <Calendar
+                                    minDate={moment().add(MIN_DAYS_RESERVATION, 'days').format("YYYY-MM-DD")}
+                                    maxDate={moment().add(MAX_DAYS_RESERVATION, 'days').format("YYYY-MM-DD")}
+                                    onDayPress={onDayPress}
+                                    firstDay={1}
+                                    enableSwipeMonths={true}
+                                    markedDates={{
+                                        [selectedDate]: {
+                                            selected: true,
+                                            disableTouchEvent: true,
+                                            selectedColor: '#FBBC05',
+                                            selectedTextColor: 'white'
+                                        }
+                                    }}
+                                />
+                        }
+
                     </ModalView>
                 </CenteredView>
             </Modal>
-        </>
+        </SafeAreaView>
     )
 }
 

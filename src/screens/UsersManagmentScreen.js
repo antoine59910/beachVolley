@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react'
+import { SafeAreaView } from 'react-native'
 import styled from 'styled-components'
 import { useIsFocused } from "@react-navigation/native";
+import { Content } from 'native-base';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import Text from '../components/Text'
@@ -19,38 +21,39 @@ const UsersManagmentScreen = ({ navigation }) => {
     }, [isFocused])
 
     return (
-        <Container>
+        <SafeAreaView style={{ flex: 1 }}>
+
             <Title>
                 <Text title center semi>Gestion des utilisateurs</Text>
             </Title>
-            <DataContainer>
-                <Text large center>Comptes : {users.length}</Text>
-            </DataContainer>
+            <Content padder>
+                <DataContainer>
+                    <Text large center>Comptes : {users.length}</Text>
+                </DataContainer>
 
-            <UsersContainer>
+                <UsersContainer>
 
-                {
-                    users.map(user =>
-                        <UserContainer
-                            color={!user.authorization && "#EA4335"}
-                            key={user.email}
-                            onPress={() => navigation.navigate('userDetail', { user: user })}>
-                            <Text large>{user.username}</Text>
-                            {user.authorization === "administrator" &&
-                                <Text color={"#34A853"}>Administrateur</Text>
-                            }
-                        </UserContainer>)
-                }
-            </UsersContainer>
-        </Container>
+                    {
+                        users.map(user =>
+                            <UserContainer
+                                color={!user.authorization && "#EA4335"}
+                                key={user.email}
+                                onPress={() => navigation.navigate('userDetail', { user: user })}>
+                                <Text large>{user.username}</Text>
+                                {user.authorization === "administrator" &&
+                                    <Text color={"#34A853"}>Administrateur</Text>
+                                }
+                            </UserContainer>)
+                    }
+                </UsersContainer>
+
+            </Content>
+        </SafeAreaView>
     )
 }
 
 export default UsersManagmentScreen
 
-const Container = styled.View`
-    flex:1;
-`;
 
 const Title = styled.View`
     background-color: #FBBC05; 

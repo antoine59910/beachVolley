@@ -4,6 +4,7 @@ import { Toast } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { SafeAreaView } from 'react-native';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import FormikCreationEvent from '../components/administrator/events/FormikCreationEvent';
@@ -51,7 +52,6 @@ const EventCreationScreen = ({ route }) => {
                     text: "La modification de l'évènement a bien été prise en compte",
                     textStyle: { textAlign: "center" },
                     duration: 3000,
-                    position: "top"
                 })
             }
             else {
@@ -111,8 +111,10 @@ const EventCreationScreen = ({ route }) => {
     }
 
     return (
-        <Container>
-            <Content>
+        <SafeAreaView style={{ flex: 1 }}>
+            <Container
+                keyboardShouldPersistTaps={'handled'}
+            >
                 <Formik
                     initialValues={initialValues}
                     onSubmit={values => onValiderPress(values)}
@@ -125,8 +127,8 @@ const EventCreationScreen = ({ route }) => {
                         onDeletePress={onDeletePress}
                     />
                 </Formik>
-            </Content>
-        </Container>
+            </Container>
+        </SafeAreaView>
     )
 };
 
@@ -138,26 +140,4 @@ const Container = styled.ScrollView`
     flex:1;
     background-color: white
     padding : 20px;
-`;
-
-const Content = styled.View`
-    justify-content: space-evenly;
-`;
-
-const Description = styled.ScrollView`
-    border-color: #DEDADF;
-    border-width: 1px;
-    border-radius : 25px;
-    padding: 5px;
-    margin: 5px;
-`;
-
-const DescriptionInput = styled.TextInput`
-    height: 150px;
-    justify-content: flex-start;
-    align-items: flex-start;
-`;
-
-const Field = styled.View`
-    margin : 10px;
 `;

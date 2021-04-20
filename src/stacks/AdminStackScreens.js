@@ -6,6 +6,8 @@ import UserDetailScreen from '../screens/UserDetailScreen'
 import EventsManagmentScreen from '../screens/EventsManagmentScreen'
 import UsersManagmentScreen from '../screens/UsersManagmentScreen'
 import EventCreationScreen from '../screens/EventCreationScreen'
+import FieldsManagmentScreen from '../screens/FieldsManagmentScreen'
+import BlocageCreationScreen from '../screens/BlocageCreationScreen'
 
 
 const AdminStackScreens = () => {
@@ -18,6 +20,8 @@ const AdminStackScreens = () => {
             <AdminStack.Screen name="eventCreation" component={EventCreationScreen} />
             <AdminStack.Screen name="usersManagment" component={UsersManagmentScreen} />
             <AdminStack.Screen name="userDetail" component={UserDetailScreen} />
+            <AdminStack.Screen name="fieldsManagment" component={FieldsManagmentScreen} />
+            <AdminStack.Screen name="blocageCreation" component={BlocageCreationScreen} />
         </AdminStack.Navigator>
     )
 }

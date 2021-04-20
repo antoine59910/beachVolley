@@ -8,7 +8,7 @@ import { ROUGE, VERT, JAUNE } from '../Color'
 import { LIMITE_RESERVATION_PAR_FIELD } from '../../config/parameters'
 import { UserContext } from '../../context/UserContext';
 
-const Creneau = ({ hour, onReservePress, onDeletePress, reservationsParHourParField, limiteReservationParDay }) => {
+const Creneau = ({ hour, onReservePress, onDeletePress, reservationsParHourParField, limiteReservationParDay, blocked }) => {
     const [showBody, setShowBody] = useState(false)
     const [alreadyRegistred, setAlreadyRegistred] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -57,8 +57,11 @@ const Creneau = ({ hour, onReservePress, onDeletePress, reservationsParHourParFi
                                 <Text center medium color="white">Complet</Text>
                             </ButtonContainer>
                             :
-                            <ButtonContainer onPress={() => handleOnReservePress(hour)} disabled={limiteReservationParDay}>
-                                <Text center medium>Réserver</Text>
+                            <ButtonContainer onPress={() => handleOnReservePress(hour)} disabled={limiteReservationParDay || blocked} color={blocked ? "gray" : null}>
+                                {blocked ?
+                                    <Text center medium color="white">Indisponible</Text> :
+                                    <Text center medium>Réserver</Text>
+                                }
                             </ButtonContainer>
                 }
 

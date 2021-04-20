@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
+import { SafeAreaView } from 'react-native'
 import styled from 'styled-components'
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -27,27 +28,29 @@ const EventsManagmentScreen = () => {
 
 
     return (
-        <Container>
+        <SafeAreaView style={{ flex: 1 }}>
+            <Container>
 
-            <EventsContainer>
+                <EventsContainer>
 
-                {events &&
-                    events.map((event, index) => (
-                        <EventContainer
-                            onPress={() => onPressEvent(event)}
-                            key={index}
-                        >
-                            <Event event={event} />
-                        </EventContainer>)
-                    )}
-            </EventsContainer>
+                    {events &&
+                        events.map((event, index) => (
+                            <EventContainer
+                                onPress={() => onPressEvent(event)}
+                                key={index}
+                            >
+                                <Event event={event} />
+                            </EventContainer>)
+                        )}
+                </EventsContainer>
 
-            {/* Nouvel évènement, on n'envoie vide en paramètre */}
-            <AjoutEvent onPress={() => navigation.navigate('eventCreation', { event: "" })}>
-                <Ionicons name="add-circle" size={100} color="#4CD964" />
-            </AjoutEvent>
+                {/* Nouvel évènement, on n'envoie vide en paramètre */}
+                <AjoutEvent onPress={() => navigation.navigate('eventCreation', { event: "" })}>
+                    <Ionicons name="add-circle" size={100} color="#4CD964" />
+                </AjoutEvent>
 
-        </Container >
+            </Container >
+        </SafeAreaView>
     )
 }
 

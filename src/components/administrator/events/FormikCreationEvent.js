@@ -7,6 +7,7 @@ import Text from '../../Text';
 import FormikDatePicker from '../../formik/FormikDatePicker'
 import FormTextInput from '../../formik/FormTextInput';
 import FormikTextArea from '../../formik/FormikTextArea';
+import { ROUGE, VERT, JAUNE } from '../../Color'
 
 const FormikCreationEvent = ({ loadingValidate, loadingDelete, id, onDeletePress }) => {
     const { submitForm } = useFormikContext();
@@ -24,6 +25,7 @@ const FormikCreationEvent = ({ loadingValidate, loadingDelete, id, onDeletePress
             <FormTextInput fieldName="playersByTeam" label="Joueurs par équipe" type="numeric" />
 
             <ButtonsContainer>
+
                 {
                     id &&
                     <ButtonSupprimer onPress={handleDeleteEvent} disabled={loadingDelete}>
@@ -60,19 +62,19 @@ const ButtonsContainer = styled.View`
 
 
 const ButtonValider = styled.TouchableOpacity`
-    background-color: #34A853;
+    background-color: ${VERT};
     width : 120px;
     border-radius: 50px;
     flex:1;
-    margin : 15px;
+    margin: auto;
 `;
 
 const ButtonSupprimer = styled.TouchableOpacity`
-    background-color: #EA4335;
+    background-color: ${ROUGE};
     width : 120px;
     border-radius: 50px;
     flex:1;
-    margin : 15px;
+    margin: auto;
 `;
 
 const Loading = styled.ActivityIndicator.attrs(props => ({

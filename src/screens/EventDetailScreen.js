@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { FirebaseContext } from '../context/FireBaseContext';
 import { UserContext } from '../context/UserContext';
-import { Dimensions } from 'react-native'
+import { Dimensions, SafeAreaView } from 'react-native'
 import { AntDesign } from '@expo/vector-icons';
 import { Content } from 'native-base';
 import { Card, CardItem } from 'native-base';
@@ -43,25 +43,26 @@ const EventInscriptionScreen = ({ route }) => {
     }, [isFocused])
 
     useEffect(() => {
-        if (inscriptions)
+        if (inscriptions) {
             setAlreadySuscribed(false)
-        inscriptions.map(inscription => {
-            console.log()
-            if (inscription.inscrivantId === user.uid)
-                setAlreadySuscribed(true)
-        })
+            inscriptions.map(inscription => {
+                if (inscription.inscrivantId === user.uid)
+                    setAlreadySuscribed(true)
+            })
+        }
     }, [inscriptions])
 
+    //Initialisation
     useEffect(() => {
         if (user.authorization === "administrator")
             setIsAdmin(true)
     }, [])
 
     return (
-        <>
+        <SafeAreaView style={{ flex: 1 }}>
             <Container>
                 <PhotoContainer>
-                    <CloseModal onPress={() => navigation.goBack()}>
+                    <CloseModal onPress={() => navigation.navigate("events")}>
                         <AntDesign name="closecircle" size={40} color="black" />
                     </CloseModal>
                     <Photo
@@ -148,7 +149,7 @@ const EventInscriptionScreen = ({ route }) => {
                     }
                 </ButtonValider>
             </ButtonValiderContainer>
-        </>
+        </SafeAreaView>
     )
 }
 

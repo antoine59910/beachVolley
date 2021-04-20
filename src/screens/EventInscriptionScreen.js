@@ -2,8 +2,10 @@ import React, { useContext, useEffect, useState } from 'react'
 import * as Yup from 'yup';
 import styled from 'styled-components'
 import { Formik } from 'formik'
-import { Toast } from 'native-base';
+import { Toast, Content } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native'
+
 
 import Text from '../components/Text'
 import FormikInscriptionEvent from '../components/events/FormikInscriptionEvent'
@@ -48,7 +50,6 @@ const EventInscriptionScreen = ({ route }) => {
                     text: "Inscription modifiée",
                     textStyle: { textAlign: "center" },
                     duration: 3000,
-                    type: 'success',
                 })
             }
         }
@@ -66,7 +67,6 @@ const EventInscriptionScreen = ({ route }) => {
                     text: "Inscription validée",
                     textStyle: { textAlign: "center" },
                     duration: 3000,
-                    type: 'success',
                 })
             }
         }
@@ -100,7 +100,6 @@ const EventInscriptionScreen = ({ route }) => {
                 text: "Inscription supprimée",
                 textStyle: { textAlign: "center" },
                 duration: 3000,
-                position: 'top',
             })
         }
         else {
@@ -108,7 +107,6 @@ const EventInscriptionScreen = ({ route }) => {
                 text: "Erreur lors de la suppression de l'inscription",
                 textStyle: { textAlign: "center", color: 'red' },
                 duration: 3000,
-                position: 'top',
             })
         }
 
@@ -131,25 +129,36 @@ const EventInscriptionScreen = ({ route }) => {
     }, [])
 
     return (
-        <Container>
-            <Text title center bold>Inscription</Text>
-            <Formik
-                initialValues={{
-                    equipe,
-                }}
-                validationSchema={validationSchema}
-                onSubmit={values => onValiderPress(values)}
-                enableReinitialize={true}
+        <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
             >
-                <FormikInscriptionEvent
-                    loadingValidate={loadingValidate}
-                    loadingDelete={loadingDelete}
-                    onDeletePress={onDeletePress}
-                    equipeId={equipeId}
-                    eventId={id}
-                />
-            </Formik>
-        </Container >
+                <Content padder>
+                    <Container
+                        keyboardShouldPersistTaps={'handled'}
+                    >
+                        <Text title center bold>Inscription</Text>
+                        <Formik
+                            initialValues={{
+                                equipe,
+                            }}
+                            validationSchema={validationSchema}
+                            onSubmit={values => onValiderPress(values)}
+                            enableReinitialize={true}
+                        >
+                            <FormikInscriptionEvent
+                                loadingValidate={loadingValidate}
+                                loadingDelete={loadingDelete}
+                                onDeletePress={onDeletePress}
+                                equipeId={equipeId}
+                                eventId={id}
+                            />
+                        </Formik>
+                    </Container >
+                </Content>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     )
 }
 

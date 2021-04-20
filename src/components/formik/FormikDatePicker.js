@@ -23,7 +23,7 @@ const FormikDatePicker = ({ fieldName, label }) => {
             <ButtonShowCalendar onPress={() => showCalendar ? setShowCalendar(false) : setShowCalendar(true)}>
                 <Text large>{label}</Text>
 
-                <Item rounded error={error} success={success}>
+                <Item rounded error={error} success={success} onPress={() => showCalendar ? setShowCalendar(false) : setShowCalendar(true)}>
                     <Input
                         value={field.value && `${field.value.substr(8, 2)}/${field.value.substr(5, 2)}/${field.value.substr(0, 4)}`}
                         editable={false}
@@ -31,6 +31,8 @@ const FormikDatePicker = ({ fieldName, label }) => {
                     {error && <Icon name='close-circle' />}
                     {success && <Icon name='checkmark-circle' />}
                 </Item>
+
+
             </ButtonShowCalendar>
             {showCalendar &&
                 <Calendar

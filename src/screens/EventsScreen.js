@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
+import { SafeAreaView } from 'react-native'
 import styled from 'styled-components'
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { Content } from 'native-base';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import Event from '../components/Event'
@@ -27,8 +27,8 @@ const EventsScreen = () => {
 
 
     return (
-        <Content padder>
-            <Text title heavy style={{ top: 20, left: 20 }}>Évenements</Text>
+        <SafeAreaView style={{ flex: 1 }}>
+            <Text title heavy style={{ top: 20, left: 20 }}>Évènements</Text>
             <EventsContainer>
                 {events &&
                     events.map((event) => (
@@ -46,7 +46,7 @@ const EventsScreen = () => {
                 }
             </EventsContainer>
 
-        </Content >
+        </SafeAreaView >
     )
 }
 
@@ -72,7 +72,6 @@ const EventContainer = styled.TouchableOpacity`
 const PhotoContainer = styled.View`
     text-align: center;
     margin: auto;
-    flex: 2;
 `;
 
 const Photo = styled.Image`
@@ -84,4 +83,5 @@ const Photo = styled.Image`
 
 const TextContainer = styled.View`
     flex:1;
+    justify-content: flex-start;
 `;
