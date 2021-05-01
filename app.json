@@ -18,14 +18,16 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.antoine59910.beachVolleyVaucluse"
+      "bundleIdentifier": "com.antoine59910.beachVolleyVaucluse",
+      "buildeNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "Beach_Volley.Vaucluse"
+      "package": "com.antoine59910.beachVolleyVaucluse",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
