@@ -6,7 +6,7 @@ import styled from 'styled-components'
 //et qui renvoie son opérande de gauche sinon.
 
 const TextStyle = ({ ...props }) => {
-    return <Text {...props}>{props.children}</Text>
+    return <Text {...props}>{props.children} </Text>
 };
 
 export default TextStyle;
@@ -15,6 +15,7 @@ const Text = styled.Text`
     color: ${props => props.color ?? '#222222'};
     margin: ${props => props.margin ?? 0};
     padding: ${props => props.padding ?? 0};
+    font-style: ${props => props.fontStyle ?? 'normal'};
 
     ${({ title, large, medium, small, tiny }) => {
         switch (true) {

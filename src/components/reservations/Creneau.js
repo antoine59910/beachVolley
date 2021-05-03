@@ -4,7 +4,7 @@ import { Card, CardItem, Body } from 'native-base';
 import { AntDesign } from '@expo/vector-icons';
 
 import Text from '../Text'
-import { ROUGE, VERT, JAUNE } from '../Color'
+import { ROUGE, VERT, JAUNE, BLEU } from '../Color'
 import { LIMITE_RESERVATION_PAR_FIELD } from '../../config/parameters'
 import { UserContext } from '../../context/UserContext';
 
@@ -44,29 +44,29 @@ const Creneau = ({ hour, onReservePress, onDeletePress, reservationsParHourParFi
                     }
 
                 </HourContainer>
+                {alreadyRegistred ?
 
-                {
-
-                    alreadyRegistred ?
-                        <ButtonContainer color={VERT} onPress={() => onDeletePress(hour)}>
-                            <Text center medium color="white">Réservé</Text>
+                    <ButtonContainer color={VERT} onPress={() => onDeletePress(hour)}>
+                        <Text center medium color="white">Inscrit</Text>
+                    </ButtonContainer>
+                    :
+                    reservationsParHourParField.length >= LIMITE_RESERVATION_PAR_FIELD ?
+                        <ButtonContainer color={ROUGE}>
+                            <Text center medium color="white">Complet</Text>
                         </ButtonContainer>
                         :
-                        reservationsParHourParField.length >= LIMITE_RESERVATION_PAR_FIELD ?
-                            <ButtonContainer color={ROUGE}>
-                                <Text center medium color="white">Complet</Text>
-                            </ButtonContainer>
-                            :
-                            <ButtonContainer onPress={() => handleOnReservePress(hour)} disabled={limiteReservationParDay || blocked} color={blocked ? "gray" : null}>
-                                {blocked ?
-                                    <Text center medium color="white">Indisponible</Text> :
-                                    <Text center medium>Réserver</Text>
-                                }
-                            </ButtonContainer>
+                        <ButtonContainer onPress={() => handleOnReservePress(hour)} disabled={limiteReservationParDay || blocked} color={blocked ? "gray" : null}>
+                            {blocked ?
+                                <Text center medium color="white">Indisponible</Text> :
+                                <Text center medium>S'inscrire</Text>
+                            }
+                        </ButtonContainer>
                 }
 
+
             </CardItem>
-            {showBody && reservationsParHourParField.length > 0 &&
+            {
+                showBody && reservationsParHourParField.length > 0 &&
                 <CardItem>
                     <Body>
                         {
@@ -90,7 +90,7 @@ const Creneau = ({ hour, onReservePress, onDeletePress, reservationsParHourParFi
                     </Body>
                 </CardItem>
             }
-        </Card>
+        </Card >
     )
 }
 

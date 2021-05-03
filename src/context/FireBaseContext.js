@@ -31,6 +31,7 @@ const Firebase = {
 
             await db.collection('users').doc(uid).set({
                 username: user.username,
+                authorization: '',
                 email: user.email,
                 level: user.level,
                 profilePhotoUrl,
@@ -47,6 +48,16 @@ const Firebase = {
             console.log("error @createUser: ", error.message)
             alert(error.message)
         }
+    },
+
+    setEmailReset: async (emailAddress) => {
+        firebase.auth().languageCode = 'fr'
+
+        firebase.auth().sendPasswordResetEmail(emailAddress).then(function () {
+            alert("un email vous a été adressé afin de réinitialiser votre mot de passe")
+        }).catch(function (error) {
+            alert(error)
+        });
     },
 
     updateUser: async (user) => {

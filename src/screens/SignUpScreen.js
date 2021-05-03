@@ -64,7 +64,7 @@ const SignUpScreen = ({ navigation }) => {
     const signUp = async () => {
         setLoading(true)
 
-        const user = { username, email, password, level, profilePhoto };
+        const user = { username, email, password, level, profilePhoto, authorization:'' };
 
         try {
             const createdUser = await firebase.createUser(user)
