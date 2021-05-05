@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 
+import Text from '../components/Text'
 import { FirebaseContext } from '../context/FireBaseContext';
 import Event from '../components/Event'
 
@@ -29,6 +30,8 @@ const EventsManagmentScreen = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+
+            <Text title heavy style={{ top: 20, left: 20 }}>Gestion des évènements</Text>
             <Container>
 
                 <EventsContainer>
@@ -64,6 +67,7 @@ const EventsContainer = styled.ScrollView`
     flex:1;
     margin : 15px;
     background-color: white;
+    margin-top: 50px;
 `;
 
 const AjoutEvent = styled.TouchableOpacity`

@@ -4,7 +4,8 @@ import { Toast } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Item, Input } from 'native-base';
-import { Dimensions, SafeAreaView } from 'react-native'
+import { SafeAreaView } from 'react-native'
+import { AntDesign } from '@expo/vector-icons';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import Text from '../components/Text';
@@ -81,6 +82,9 @@ const EventCreationScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <CloseModal onPress={() => navigation.goBack()}>
+                <AntDesign name="closecircle" size={40} color="black" />
+            </CloseModal>
             <Container
                 keyboardShouldPersistTaps={'handled'}
             >
@@ -198,3 +202,12 @@ const Loading = styled.ActivityIndicator.attrs(props => ({
     color: "white",
     size: "small",
 }))``;
+
+const CloseModal = styled.TouchableOpacity`
+    position : absolute;
+    top:40px;
+    right:20px;
+    background-color: white;
+    border-radius: 20px;
+    z-index:1;
+`;

@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from 'react'
 import * as Yup from 'yup';
 import styled from 'styled-components'
 import { Formik } from 'formik'
-import { Toast, Content } from 'native-base';
+import { Toast } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native'
-
+import { AntDesign } from '@expo/vector-icons';
 
 import Text from '../components/Text'
 import FormikInscriptionEvent from '../components/events/FormikInscriptionEvent'
@@ -130,15 +130,20 @@ const EventInscriptionScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+                        <CloseModal onPress={() => navigation.goBack()}>
+                <AntDesign name="closecircle" size={40} color="black" />
+            </CloseModal>
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
             >
-                <Content padder>
                     <Container
                         keyboardShouldPersistTaps={'handled'}
                     >
-                        <Text title center bold>Inscription</Text>
+                        <Title>
+                        <Text title heavy style={{ top: 20, left: 20 }}>Inscription</Text>
+                        </Title>
+                        
                         <Formik
                             initialValues={{
                                 equipe,
@@ -156,7 +161,6 @@ const EventInscriptionScreen = ({ route }) => {
                             />
                         </Formik>
                     </Container >
-                </Content>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
@@ -165,7 +169,19 @@ const EventInscriptionScreen = ({ route }) => {
 export default EventInscriptionScreen
 
 
-const Container = styled.ScrollView`
+const Container = styled.View`
     flex: 1;
-    margin-top: 16px;
+`;
+
+const Title = styled.View`
+    margin-bottom : 50px;
+`;
+
+const CloseModal = styled.TouchableOpacity`
+    position : absolute;
+    top:40px;
+    right:20px;
+    background-color: white;
+    border-radius: 20px;
+    z-index:1;
 `;

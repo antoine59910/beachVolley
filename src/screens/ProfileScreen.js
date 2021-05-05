@@ -49,14 +49,14 @@ const ProfileScreen = () => {
                         }
                     />
                 </ProfilePhotoContainer>
-                <Text large bold margin="16px">
+                <Text large margin="16px">
                     {user.username}
                 </Text>
-                <Text medium bold margin="0 0 16px 0">
+                <Text medium margin="0 0 16px 0">
                     Niveau : {user.level}
                 </Text>
                 <ModifyProfil onPress={handleOnModifyProfilPress}>
-                    <Text medium bold>
+                    <Text medium >
                         Modifier mon profil
                 </Text>
                 </ModifyProfil>
@@ -92,7 +92,7 @@ const ProfileScreen = () => {
                 </MainContainer>
 
                 <Logout onPress={logOut}>
-                    <Text medium bold>
+                    <Text medium >
                         Se déconnecter
                 </Text>
                 </Logout>

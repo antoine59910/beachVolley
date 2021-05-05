@@ -11,18 +11,54 @@ import { Card, CardItem } from 'native-base';
 import Text from '../components/Text'
 import { ROUGE, VERT, JAUNE } from '../components/Color'
 
+import firebase from 'firebase'
+import 'firebase/firestore'
+
+const db = firebase.firestore()
+
 const EventInscriptionScreen = ({ route }) => {
     const [user, setUser] = useContext(UserContext)
     const [alreadySuscribed, setAlreadySuscribed] = useState(false)
     const [isAdmin, setIsAdmin] = useState(false)
     const firebase = useContext(FirebaseContext);
     const [inscriptions, setInscriptions] = useState([]);
+    const [event, setEvent] = useState(route.params.event);
     const isFocused = useIsFocused();
-    const event = route.params.event
 
     const { date, description, joueurParEquipe, maxEquipes, titre, nbEquipesInscrites, id } = event
     const placesRestantes = maxEquipes - nbEquipesInscrites;
     const navigation = useNavigation();
+
+    //MAJ temps réel de l'évènement si qqun s'inscrit/se supprime à l'évènement
+    useEffect(() => {
+        const unscubscribe = db.collection('evenements')
+            .doc(event.id)
+            .onSnapshot((snapshot) => {
+                if (snapshot.exists)
+                    setEvent(snapshot.data())
+            })
+
+        return () => {
+            unscubscribe()
+        }
+    }, [])
+
+    //Mise à jour temps réel des inscriptions
+        useEffect(() => {
+        const unscubscribe = db.collection('evenements').doc(event.id).collection('equipes')
+        .onSnapshot((querySnapshot) => {
+                var equipes=[]     
+                querySnapshot.forEach((doc) => {
+                    equipes.push(doc.data());
+
+                });
+                setInscriptions(equipes)
+            })
+
+        return () => {
+            unscubscribe()
+        }
+    }, [])
 
     const onPressSInscrire = (event) => {
         navigation.navigate('eventInscription', { event: event, inscription: "" })
@@ -34,14 +70,7 @@ const EventInscriptionScreen = ({ route }) => {
             navigation.navigate('eventInscription', { event: event, inscription: inscription })
     }
 
-    useEffect(() => {
-        const getInscriptionsEvent = async () => {
-            setInscriptions(await firebase.getInscriptionsEvent(id));
-        }
-
-        getInscriptionsEvent();
-    }, [isFocused])
-
+    //Permet de s'avoir si le joueur s'est déjà inscrit ou non
     useEffect(() => {
         if (inscriptions) {
             setAlreadySuscribed(false)
@@ -158,6 +187,7 @@ export default EventInscriptionScreen
 
 const Container = styled.ScrollView`
     flex: 1;
+    background-color:white;
 `;
 
 const PhotoContainer = styled.View`

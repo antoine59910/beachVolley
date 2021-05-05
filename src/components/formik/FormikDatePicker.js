@@ -27,6 +27,7 @@ const FormikDatePicker = ({ fieldName, label }) => {
                     <Input
                         value={field.value && `${field.value.substr(8, 2)}/${field.value.substr(5, 2)}/${field.value.substr(0, 4)}`}
                         editable={false}
+                        pointerEvents="none"
                     />
                     {error && <Icon name='close-circle' />}
                     {success && <Icon name='checkmark-circle' />}

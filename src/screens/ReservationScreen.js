@@ -215,12 +215,18 @@ const ReservationScreen = () => {
                                     </LogoContainer>
                                     <ButtonContainer>
                                         <ButtonDate onPress={() => showCalendar ? setShowCalendar(false) : setShowCalendar(true)}>
+                                        {/* <Yesterday>
+                                        <AntDesign name="caretleft" size={34} color="black" />
+                                        </Yesterday> */}
                                             {selectedDate ?
                                                 selectedDate === moment().format("YYYY-MM-DD") ?
                                                     <Text title >Aujourd'hui</Text>
                                                     : <Text title>{selectedDate.substr(8, 2)}/{selectedDate.substr(5, 2)}/{selectedDate.substr(0, 4)}</Text>
                                                 : null
                                             }
+                                            {/* <Tomorrow>
+                                            <AntDesign name="caretright" size={34} color="black" />
+                                            </Tomorrow> */}
                                         </ButtonDate>
                                     </ButtonContainer>
                                 </TopHeader>
@@ -368,6 +374,7 @@ const ButtonDate = styled.TouchableOpacity`
     margin-right: 5px;
     margin-left: 5px;
     border-radius : 55px;
+    flex-direction: row;
 `;
 
 const BottomHeader = styled.View`
@@ -423,3 +430,12 @@ const CloseModal = styled.TouchableOpacity`
     top:10px;
     right:10px;
 `;
+
+const Yesterday = styled.TouchableOpacity`
+    z-index:1;
+`
+
+const Tomorrow = styled.TouchableOpacity`
+    z-index:1;
+    
+`

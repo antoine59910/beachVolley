@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { Toast } from 'native-base';
+import { AntDesign } from '@expo/vector-icons';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import Text from '../components/Text'
@@ -50,6 +51,7 @@ const EventsManagmentScreen = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <Text title heavy style={{ top: 20, left: 20 }}>Gestion des terrains</Text>
             <Container>
 
                 <EventsContainer>
@@ -98,6 +100,7 @@ const EventsContainer = styled.ScrollView`
     flex:1;
     margin : 15px;
     background-color: white;
+    margin-top: 50px;
 `;
 
 const AjoutEvent = styled.TouchableOpacity`
@@ -118,8 +121,3 @@ const DeleteButton = styled.TouchableOpacity`
     width: 50%;
     margin: auto;
 `;
-
-const Loading = styled.ActivityIndicator.attrs(props => ({
-    color: "#FBBC05",
-    size: "large",
-}))``;

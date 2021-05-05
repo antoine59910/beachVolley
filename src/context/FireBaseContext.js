@@ -375,7 +375,7 @@ const Firebase = {
             console.log('Error @getEvents : ', error)
         }
     },
-
+    
     deleteEvent: async (id) => {
 
         try {

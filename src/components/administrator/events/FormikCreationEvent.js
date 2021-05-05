@@ -3,11 +3,13 @@ import React from 'react';
 import { Form } from 'native-base';
 import styled from 'styled-components'
 
-import Text from '../../Text';
+
 import FormikDatePicker from '../../formik/FormikDatePicker'
 import FormTextInput from '../../formik/FormTextInput';
 import FormikTextArea from '../../formik/FormikTextArea';
 import { ROUGE, VERT, JAUNE } from '../../Color'
+import Text from '../../Text';
+
 
 const FormikCreationEvent = ({ loadingValidate, loadingDelete, id, onDeletePress }) => {
     const { submitForm } = useFormikContext();
@@ -17,15 +19,17 @@ const FormikCreationEvent = ({ loadingValidate, loadingDelete, id, onDeletePress
     }
 
     return (
-        <Form>
-            <FormTextInput fieldName="title" label="Titre" />
-            <FormikDatePicker fieldName="selectedDate" label="Date" />
-            <FormikTextArea fieldName="description" label="Description" />
-            <FormTextInput fieldName="numberOfTeams" label="Equipes au total" type="numeric" />
-            <FormTextInput fieldName="playersByTeam" label="Joueurs par équipe" type="numeric" />
-
-            <ButtonsContainer>
-
+        <>
+            <Container>
+                <Form style={{ padding: 20, flex: 1 }}>
+                    <FormTextInput fieldName="title" label="Titre" />
+                    <FormikDatePicker fieldName="selectedDate" label="Date" />
+                    <FormikTextArea fieldName="description" label="Description" />
+                    <FormTextInput fieldName="numberOfTeams" label="Equipes au total" type="numeric" />
+                    <FormTextInput fieldName="playersByTeam" label="Joueurs par équipe" type="numeric" />
+                </Form >
+            </Container>
+            <ButtonValiderContainer>
                 {
                     id &&
                     <ButtonSupprimer onPress={handleDeleteEvent} disabled={loadingDelete}>
@@ -35,46 +39,53 @@ const FormikCreationEvent = ({ loadingValidate, loadingDelete, id, onDeletePress
                         }
                     </ButtonSupprimer>
                 }
-
                 <ButtonValider onPress={submitForm} disabled={loadingValidate}>
                     {loadingValidate ?
                         <Loading />
-                        : id ?
+                        : 
+                            id ?
                             <Text center large color={"white"}>Modifier</Text>
-                            : <Text center large color={"white"}>Créer</Text>
+                            : <Text center large color={"white"}>Créer l'évènement</Text>
                     }
-
                 </ButtonValider>
-            </ButtonsContainer>
-        </Form >
+            </ButtonValiderContainer>
+
+        </>
     )
 }
 
 export default FormikCreationEvent
 
-
-const ButtonsContainer = styled.View`
-    margin-top : 30px;
-    margin-bottom : 50px;
-    justify-content : space-between;
-    flex-direction: row;
+const Container = styled.ScrollView`
+    
 `;
 
+const ButtonValiderContainer = styled.View`
+    position : absolute;
+    bottom : 0px;
+    z-index: 1;
+    width : 100%;
+    border-width : 0.2px;
+    background-color: white;
+    flex-direction:row;
+    align-items:center;
+`
 
 const ButtonValider = styled.TouchableOpacity`
+flex:1;
+    margin: 10px;
+    padding : 20px;
     background-color: ${VERT};
-    width : 120px;
     border-radius: 50px;
-    flex:1;
-    margin: auto;
 `;
 
+
 const ButtonSupprimer = styled.TouchableOpacity`
-    background-color: ${ROUGE};
-    width : 120px;
-    border-radius: 50px;
-    flex:1;
-    margin: auto;
+flex:1;
+margin: 10px;
+padding : 20px;
+background-color: ${ROUGE};
+border-radius: 50px;
 `;
 
 const Loading = styled.ActivityIndicator.attrs(props => ({

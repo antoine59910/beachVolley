@@ -119,7 +119,7 @@ const SignInScreen = ({ navigation }) => {
                     </Text>
                 </SignUp>
                 
-                <FacebookSignIn onPress={() => { console.log("ici") }}>
+                {/* <FacebookSignIn onPress={() => { console.log("ici") }}>
                     <SocialIcon
                         title='Se connecter avec facebook'
                         button
@@ -132,7 +132,8 @@ const SignInScreen = ({ navigation }) => {
                         button
                         type='google'
                     />
-                </GoogleSignIn>
+                </GoogleSignIn> */}
+                
             </KeyboardAvoidingView>
             <StatusBar barStyle="light-content" />
 

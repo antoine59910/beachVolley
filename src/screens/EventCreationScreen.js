@@ -5,9 +5,11 @@ import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { SafeAreaView } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import FormikCreationEvent from '../components/administrator/events/FormikCreationEvent';
+
 
 const EventCreationScreen = ({ route }) => {
     const [loadingValidate, setLoadingValidate] = useState(false)
@@ -112,6 +114,9 @@ const EventCreationScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <CloseModal onPress={() => navigation.goBack()}>
+                <AntDesign name="closecircle" size={40} color="black" />
+            </CloseModal>
             <Container
                 keyboardShouldPersistTaps={'handled'}
             >
@@ -119,14 +124,18 @@ const EventCreationScreen = ({ route }) => {
                     initialValues={initialValues}
                     onSubmit={values => onValiderPress(values)}
                     validationSchema={ValidationSchema}
+                    style={{ flex: 1 }}
                 >
-                    <FormikCreationEvent
-                        loadingValidate={loadingValidate}
-                        loadingDelete={loadingDelete}
-                        id={id}
-                        onDeletePress={onDeletePress}
-                    />
+                    <>
+                        <FormikCreationEvent
+                            loadingValidate={loadingValidate}
+                            loadingDelete={loadingDelete}
+                            id={id}
+                            onDeletePress={onDeletePress}
+                        />
+                    </>
                 </Formik>
+                
             </Container>
         </SafeAreaView>
     )
@@ -136,8 +145,17 @@ export default EventCreationScreen
 
 
 
-const Container = styled.ScrollView`
+const Container = styled.View`
     flex:1;
-    background-color: white
-    padding : 20px;
 `;
+
+const CloseModal = styled.TouchableOpacity`
+    position : absolute;
+    top:40px;
+    right:20px;
+    background-color: white;
+    border-radius: 20px;
+    z-index:1;
+`;
+
+

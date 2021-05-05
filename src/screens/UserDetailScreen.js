@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react'
 import { Dimensions, SafeAreaView } from 'react-native';
 import styled from 'styled-components'
+import { useNavigation } from "@react-navigation/native";
+import { AntDesign } from '@expo/vector-icons';
 
 import { FirebaseContext } from '../context/FireBaseContext'
 import Text from '../components/Text'
@@ -8,6 +10,8 @@ import Text from '../components/Text'
 const UserDetailScreen = ({ route }) => {
     const firebase = useContext(FirebaseContext)
     const [user, setUser] = useState(route.params.user)
+    const navigation = useNavigation();
+
 
     const inscription = async () => {
         try {
@@ -15,6 +19,7 @@ const UserDetailScreen = ({ route }) => {
             const updated = await firebase.updateAuthorization(user.uid, authorization)
             if (updated) {
                 setUser({ ...user, authorization: "inscrit" })
+                navigation.goBack()
             }
         } catch (error) {
             console.log("Error @inscription: ", error)
@@ -27,6 +32,7 @@ const UserDetailScreen = ({ route }) => {
             const updated = await firebase.updateAuthorization(user.uid, authorization)
             if (updated) {
                 setUser({ ...user, authorization: "" })
+                navigation.goBack()
             }
         } catch (error) {
             console.log("Error @inscription: ", error)
@@ -39,6 +45,7 @@ const UserDetailScreen = ({ route }) => {
             const updated = await firebase.updateAuthorization(user.uid, authorization)
             if (updated) {
                 setUser({ ...user, authorization: "administrator" })
+                navigation.goBack()
             }
         } catch (error) {
             console.log("Error @inscription: ", error)
@@ -47,6 +54,9 @@ const UserDetailScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <CloseModal onPress={() => navigation.goBack()}>
+                <AntDesign name="closecircle" size={40} color="black" />
+            </CloseModal>
             <Container>
                 <Text large medium bold
                     margin="16px 0 32px 0"
@@ -65,10 +75,10 @@ const UserDetailScreen = ({ route }) => {
                         }
                     />
                 </ProfilePhotoContainer>
-                <Text large bold margin="16px 0 16px 0">
+                <Text large margin="16px 0 16px 0">
                     {user.username}
                 </Text>
-                <Text large medium bold margin="16px 0 16px 0">
+                <Text large medium margin="16px 0 16px 0">
                     {user.email}
                 </Text>
 
@@ -141,4 +151,13 @@ margin: 16px 0px 16px 0px;
     justify-content: center;
     background-color: #FBBC05;
     border-radius: 6px;
+`;
+
+const CloseModal = styled.TouchableOpacity`
+    position : absolute;
+    top:40px;
+    right:20px;
+    background-color: white;
+    border-radius: 20px;
+    z-index:1;
 `;

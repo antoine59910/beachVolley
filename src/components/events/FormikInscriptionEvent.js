@@ -5,6 +5,7 @@ import { Toast } from 'native-base';
 
 import Text from '../Text';
 import FormikArrayInput from '../formik/FormikArrayInput';
+import {VERT, ROUGE, JAUNE} from '../Color'
 
 
 const FormikCreationEvent = ({ loadingValidate, loadingDelete, equipeId, onDeletePress, eventId }) => {
@@ -24,12 +25,14 @@ const FormikCreationEvent = ({ loadingValidate, loadingDelete, equipeId, onDelet
 
     return (
         <>
+        <Form>
             <FormikArrayInput
                 arrayName="equipe"
                 placeholderName="Joueur"
                 addItem={helpers => addPlayer(helpers)}
                 removeItem={helpers => removePlayer(helpers)}
             />
+        </Form>
             <ButtonsContainer>
                 {
                     equipeId &&
@@ -57,30 +60,40 @@ const FormikCreationEvent = ({ loadingValidate, loadingDelete, equipeId, onDelet
 
 export default FormikCreationEvent
 
-const ButtonsContainer = styled.View`
-    margin-top : 30px;
-    margin-bottom : 50px;
-    justify-content : space-between;
-    flex-direction: row;
-`;
-
-const ButtonSupprimer = styled.TouchableOpacity`
-    background-color: #EA4335;
-    width : 120px;
-    border-radius: 50px;
-    flex:1;
-    margin : 15px;
-`;
-
-const ButtonValider = styled.TouchableOpacity`
-    background-color: #34A853;
-    width : 120px;
-    border-radius: 50px;
-    flex:1;
-    margin : 15px;
-`;
 
 const Loading = styled.ActivityIndicator.attrs(props => ({
     color: "white",
     size: "large",
 }))``;
+
+const Form = styled.ScrollView`
+margin-bottom: 100px;`;
+
+
+const ButtonsContainer = styled.View`
+    position : absolute;
+    bottom : 0px;
+    z-index: 1;
+    width : 100%;
+    border-width : 0.2px;
+    background-color: white;
+    flex-direction:row;
+    align-items:center;
+`
+
+const ButtonValider = styled.TouchableOpacity`
+    flex:1;
+    margin: 10px;
+    padding : 20px;
+    background-color: ${VERT};
+    border-radius: 50px;
+`;
+
+
+const ButtonSupprimer = styled.TouchableOpacity`
+flex:1;
+margin: 10px;
+padding : 20px;
+background-color: ${ROUGE};
+border-radius: 50px;
+`;
