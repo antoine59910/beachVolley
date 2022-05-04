@@ -21,7 +21,7 @@ const FormikCreationEvent = ({ loadingValidate, loadingDelete, id, onDeletePress
     return (
         <>
             <Container>
-                <Form style={{ padding: 20, flex: 1 }}>
+                <Form style={{ padding: 20, flex: 1, marginBottom:100 }}>
                     <FormTextInput fieldName="title" label="Titre" />
                     <FormikDatePicker fieldName="selectedDate" label="Date" />
                     <FormikTextArea fieldName="description" label="Description" />
@@ -61,9 +61,6 @@ const Container = styled.ScrollView`
 `;
 
 const ButtonValiderContainer = styled.View`
-    position : absolute;
-    bottom : 0px;
-    z-index: 1;
     width : 100%;
     border-width : 0.2px;
     background-color: white;
@@ -72,20 +69,20 @@ const ButtonValiderContainer = styled.View`
 `
 
 const ButtonValider = styled.TouchableOpacity`
-flex:1;
-    margin: 10px;
-    padding : 20px;
+    flex:1;
+    margin: 2px;
+    padding : 2px;
     background-color: ${VERT};
     border-radius: 50px;
 `;
 
 
 const ButtonSupprimer = styled.TouchableOpacity`
-flex:1;
-margin: 10px;
-padding : 20px;
-background-color: ${ROUGE};
-border-radius: 50px;
+    flex:1;
+    margin: 2px;
+    padding : 2px;
+    background-color: ${ROUGE};
+    border-radius: 50px;
 `;
 
 const Loading = styled.ActivityIndicator.attrs(props => ({

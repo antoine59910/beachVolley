@@ -2,35 +2,42 @@
   "expo": {
     "name": "beachVolleyVaucluse",
     "slug": "beachVolleyVaucluse",
-    "version": "1.0.0",
+    "version": "3.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.antoine59910.beachVolleyVaucluse",
-      "buildNumber": "1.0.0"
+      "buildNumber": "3.0.1",
+      "config": {
+        "googleMapsApiKey": "AIzaSyDR9Xqud2vRzs5toTBDNZTZQzoWdLujzps"
+      },
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Cette application nécessite l'accès à vos photos afin d'utiliser un AVATAR au sein de l'application"
+      }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.antoine59910.beachVolleyVaucluse",
-      "versionCode": 1
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "versionCode": 31,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBTjKS0tv17izJGwIMOSPwDXTiBIA0JgVc"
+        }
+      }
     }
   }
 }

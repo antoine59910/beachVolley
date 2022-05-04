@@ -1,7 +1,13 @@
 export const TERRAINS = ["Terrain 1", "Terrain 2", "Terrain 3"];
 export const MINHOUR = 8;
 export const MAXHOUR = 21;
-export const LIMITE_RESERVATION_PAR_DAY = 99;
-export const LIMITE_RESERVATION_PAR_FIELD = 99;
+export const LIMITE_RESERVATION_PAR_DAY = 4;
+export const LIMITE_RESERVATION_PAR_FIELD = 8;
 export const MIN_DAYS_RESERVATION = 0;
 export const MAX_DAYS_RESERVATION = 7;
+export const URL_GROUPE_FACEBOOK = "https://www.facebook.com/groups/243690763026618";
+export const URL_SITE_INTERNET = "https://beachvolleyvaucluse.fr/";;
+export const URL_SITE_INTERNET_COMMENT_ADHERER = "https://beachvolleyvaucluse.fr/comment-adherer/";;
+export const PLAYERS_BY_MATCH = 4;
+export const LEVELS = ["débutant", "intermédiaire", "confirmé", "avancé", "expert",]
+export const EVENTS_PICTURES = ["Tournoi", "Entrainement", "Autre"]

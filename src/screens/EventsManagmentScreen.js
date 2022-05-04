@@ -31,7 +31,7 @@ const EventsManagmentScreen = () => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
 
-            <Text title heavy style={{ top: 20, left: 20 }}>Gestion des évènements</Text>
+            <Text title heavy style={{ top: 20, left: 20 }}>Gestion évènements</Text>
             <Container>
 
                 <EventsContainer>

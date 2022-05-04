@@ -5,6 +5,11 @@ import { UserContext } from '../context/UserContext'
 import { ROUGE, VERT, JAUNE } from '../components/Color'
 import { FirebaseContext } from '../context/FireBaseContext';
 
+import firebase from 'firebase'
+import 'firebase/firestore'
+
+const db = firebase.firestore()
+
 const Event = ({ event }) => {
     const [user, setUser] = useContext(UserContext)
     const [isSubscribed, setIsSubscribed] = useState(false)
@@ -14,13 +19,22 @@ const Event = ({ event }) => {
     const { titre, maxEquipes, nbEquipesInscrites, date } = event;
     const placesRestantes = maxEquipes - nbEquipesInscrites;
 
-    useEffect(() => {
-        const getInscriptionsEvent = async () => {
-            setInscriptions(await firebase.getInscriptionsEvent(event.id));
-        }
-
-        getInscriptionsEvent();
-    }, [])
+        //Mise à jour temps réel des inscriptions
+        useEffect(() => {
+            const unscubscribe = db.collection('evenements').doc(event.id).collection('equipes')
+            .onSnapshot((querySnapshot) => {
+                    var equipes=[]     
+                    querySnapshot.forEach((doc) => {
+                        equipes.push(doc.data());
+    
+                    });
+                    setInscriptions(equipes)
+                })
+    
+            return () => {
+                unscubscribe()
+            }
+        }, [])
 
     useEffect(() => {
         inscriptions &&

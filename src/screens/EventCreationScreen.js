@@ -4,16 +4,21 @@ import { Toast } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, Dimensions } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
 import { FirebaseContext } from '../context/FireBaseContext';
 import FormikCreationEvent from '../components/administrator/events/FormikCreationEvent';
+import Text from "../components/Text";
+import { EVENTS_PICTURES } from '../config/parameters'
+import { ROUGE, VERT, JAUNE, BLEU } from '../components/Color'
+import { ScrollView } from 'react-native';
 
 
 const EventCreationScreen = ({ route }) => {
     const [loadingValidate, setLoadingValidate] = useState(false)
     const [loadingDelete, setLoadingDelete] = useState(false)
+    const [selectedPicture, setSelectedPicture] = useState("Autre")
     const firebase = useContext(FirebaseContext)
     const navigation = useNavigation();
 
@@ -43,12 +48,11 @@ const EventCreationScreen = ({ route }) => {
     const onValiderPress = async ({ ...values }) => {
         const { title, description, selectedDate, playersByTeam, numberOfTeams } = values
         let response = false
-
         setLoadingValidate(true)
 
         //Modification
         if (id) {
-            response = await firebase.setEvent(title, description, selectedDate, playersByTeam, numberOfTeams, id)
+            response = await firebase.setEvent(title, description, selectedDate, playersByTeam, numberOfTeams,selectedPicture, id )
             if (response) {
                 Toast.show({
                     text: "La modification de l'évènement a bien été prise en compte",
@@ -66,7 +70,7 @@ const EventCreationScreen = ({ route }) => {
         }
         //Création
         else {
-            response = await firebase.setEvent(title, description, selectedDate, playersByTeam, numberOfTeams)
+            response = await firebase.setEvent(title, description, selectedDate, playersByTeam, numberOfTeams, selectedPicture)
             if (response) {
                 Toast.show({
                     text: "Evènement créé",
@@ -117,9 +121,46 @@ const EventCreationScreen = ({ route }) => {
             <CloseModal onPress={() => navigation.goBack()}>
                 <AntDesign name="closecircle" size={40} color="black" />
             </CloseModal>
+            
             <Container
                 keyboardShouldPersistTaps={'handled'}
             >
+                <Text title heavy style={{ top: 20, left: 20, marginBottom: 50 }}>Création évènement</Text>
+                <EventsTitleContainer>
+                    {
+                        EVENTS_PICTURES.map(eventPicture => {
+                            return (
+
+                                <EventTitleContainer
+                                    color={selectedPicture === eventPicture ? VERT : JAUNE}
+                                    onPress={() => setSelectedPicture(eventPicture)}
+                                    disabled={selectedPicture === eventPicture}
+                                    key={eventPicture}
+                                >
+                                    <Text color={selectedPicture === eventPicture ? "white" : null} medium>{eventPicture}</Text>
+                                </EventTitleContainer>
+                            )
+                        })
+                    }
+                </EventsTitleContainer>
+                {/* <PictureContainer>
+                    {
+                        selectedPicture === "Tournoi" ?
+                            <Picture
+                                source={require("../../assets/tournament.jpg")}
+                            />
+                            :
+                            selectedPicture === "Entrainement" ?
+                                <Picture
+                                    source={require("../../assets/training.jpg")}
+                                />
+                                :
+                                <Picture
+                                    source={require("../../assets/eventPicture.jpg")}
+                                />
+                    }
+                </PictureContainer> */}
+
                 <Formik
                     initialValues={initialValues}
                     onSubmit={values => onValiderPress(values)}
@@ -135,7 +176,7 @@ const EventCreationScreen = ({ route }) => {
                         />
                     </>
                 </Formik>
-                
+
             </Container>
         </SafeAreaView>
     )
@@ -158,4 +199,30 @@ const CloseModal = styled.TouchableOpacity`
     z-index:1;
 `;
 
+const EventsTitleContainer = styled.View`
+    flex-direction: row;
+    justify-content: space-evenly;
+`;
 
+const EventTitleContainer = styled.TouchableOpacity`
+    background-color: ${props => props.color || "#FAC01C"}; 
+    flex: 1;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    border-radius: 25px;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+`;
+
+const PictureContainer = styled.View`
+`;
+
+const Picture = styled.Image`
+    height: ${432 * Dimensions.get('window').width / 750 / 2}px;
+    width: ${Dimensions.get('window').width / 2}px;
+    z-index: -100;
+    margin-left:auto;
+    margin-right:auto;
+`;

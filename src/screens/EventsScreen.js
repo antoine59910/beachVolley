@@ -34,9 +34,21 @@ const EventsScreen = () => {
                     events.map((event) => (
                         <EventContainer key={event.id} onPress={() => onPressEvent(event)}>
                             <PhotoContainer>
-                                <Photo
-                                    source={require("../../assets/eventPictureResized.jpg")}
-                                />
+                                {
+                                    event.selectedPicture === "Tournoi" ?
+                                        <Photo
+                                            source={require("../../assets/tournament.jpg")}
+                                        />
+                                        :
+                                        event.selectedPicture === "Entrainement" ?
+                                            <Photo
+                                                source={require("../../assets/training.jpg")}
+                                            />
+                                            :
+                                            <Photo
+                                                source={require("../../assets/eventPicture.jpg")}
+                                            />
+                                }
                             </PhotoContainer>
                             <TextContainer>
                                 <Event event={event} />

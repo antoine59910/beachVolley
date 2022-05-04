@@ -15,7 +15,8 @@ const AppStackScreens = () => {
         <AppStack.Navigator headerMode="none">
             {user.isLoggedIn === null ? (
                 <AppStack.Screen name="Loading" component={LoadingScreen} />
-            ) : user.isLoggedIn ? (
+            ) : 
+            user.isLoggedIn ? ( 
                 <AppStack.Screen name="Main" component={MainStackScreens} />
             ) : (
                 <AppStack.Screen name="Auth" component={AuthStackScreens} />

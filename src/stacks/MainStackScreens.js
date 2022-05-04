@@ -64,7 +64,7 @@ export default MainStackScreens = () => {
         showLabel: false,
     }
 
-    const screenOptions = (({ route }) => ({
+    const screenOptions = (({route}) => ({
         tabBarIcon: ({ focused }) => {
             let iconName = ""
             switch (route.name) {

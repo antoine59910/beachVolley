@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Modal, SafeAreaView, Platform, KeyboardAvoidingView } from 'react-native'
+import { Modal, SafeAreaView, Platform, KeyboardAvoidingView, Alert } from 'react-native'
 import styled from 'styled-components'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import * as Permissions from 'expo-permissions'
@@ -26,7 +26,7 @@ const SignUpScreen = ({ navigation }) => {
 
     const getPermission = async () => {
         if (Platform.OS !== "web") {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA);
+            const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
 
             return status;
         }
@@ -60,6 +60,13 @@ const SignUpScreen = ({ navigation }) => {
 
         pickImage();
     };
+
+    const handleSignUpPress = () => {
+        if(profilePhoto)
+            signUp();
+        else
+            Alert.alert("AVATAR manquant","Merci de choisir une photo de profil pour des raisons de contrôle d'accès sur le site")
+    }
 
     const signUp = async () => {
         setLoading(true)
@@ -103,7 +110,6 @@ const SignUpScreen = ({ navigation }) => {
                                 <ProfilePhoto source={{ uri: profilePhoto }} />
                             ) : (
                                 <DefaultProfilePhoto>
-
                                     <AntDesign name="plus" size={24} color="white" />
                                 </DefaultProfilePhoto>
                             )
@@ -147,7 +153,7 @@ const SignUpScreen = ({ navigation }) => {
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 autofocus={true}
-                                onChangeText={(username) => setUsername(username.trim())}
+                                onChangeText={(username) => setUsername(username)}
                                 value={username}
                             />
                         </AuthContainer>
@@ -182,7 +188,7 @@ const SignUpScreen = ({ navigation }) => {
 
                     </Auth>
 
-                    <SignUpContainer onPress={signUp} disabled={loading}>
+                    <SignUpContainer onPress={handleSignUpPress} disabled={loading}>
                         {loading ?
                             (
                                 <Loading />

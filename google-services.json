@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "9482099291",
+    "project_id": "beachvolleyvaucluse-debc4",
+    "storage_bucket": "beachvolleyvaucluse-debc4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9482099291:android:20a98920333c27b8113d7e",
+        "android_client_info": {
+          "package_name": "com.antoine59910.beachVolleyVaucluse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9482099291-f3djvgfj768l4fd13247qokm46hgu5bg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl92JwyOmCvh_5pYHUkhgxybUWBXD2ZUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9482099291-f3djvgfj768l4fd13247qokm46hgu5bg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

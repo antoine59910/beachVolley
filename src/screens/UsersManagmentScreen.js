@@ -59,7 +59,7 @@ const UsersManagmentScreen = () => {
                                 color={!user.authorization && "#EA4335"}
                                 key={user.email}
                                 onPress={() => navigation.navigate('userDetail', { user: user })}>
-                                <ProfilePhotoContainer>
+                                {/* <ProfilePhotoContainer>
                                     <ProfilePhoto
                                         source={
                                             user.profilePhotoUrl === "default"
@@ -67,9 +67,9 @@ const UsersManagmentScreen = () => {
                                                 : { uri: user.profilePhotoUrl }
                                         }
                                     />
-                                </ProfilePhotoContainer>
+                                </ProfilePhotoContainer> */}
                                 <TextUserContainer>
-                                <Text large>{user.username}</Text>
+                                <Text large center>{user.username}</Text>
                                 {user.authorization === "administrator" &&
                                     <Text color={"#34A853"}>Administrateur</Text>
                                 }
@@ -134,8 +134,9 @@ const ProfilePhotoContainer = styled.View`
 `;
 
 const TextUserContainer = styled.View`
-justify-content:flex-start;
-align-items:flex-start;
-margin-left: 15px;
-flex:1;
+    justify-content:flex-start;
+    align-items:flex-start;
+    margin-left: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 `;

@@ -1,8 +1,6 @@
 import React, { useState, useContext } from 'react'
-import { SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native'
+import { SafeAreaView, KeyboardAvoidingView, Platform, Dimensions } from 'react-native'
 import styled from 'styled-components'
-import { SocialIcon } from 'react-native-elements'
-
 
 import { UserContext } from '../context/UserContext'
 import { FirebaseContext } from '../context/FireBaseContext'
@@ -50,9 +48,14 @@ const SignInScreen = ({ navigation }) => {
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
-            >
+            >               
                 <LogoContainer>
-                    <Logo source={require('../../assets/logo.png')} />
+                    <Logo 
+                    source={require('../../assets/logo.png')} 
+                    style={{
+                        height: Dimensions.get('window').width/2,
+                    }}
+                    resizeMode="contain"/>
                 </LogoContainer>
 
                 <Auth>
@@ -68,6 +71,7 @@ const SignInScreen = ({ navigation }) => {
                             keyboardType="email-address"
                             onChangeText={(text) => setEmail(text.trim())}
                             value={email}
+                            onSubmitEditing={signIn}
                         />
                     </AuthContainer>
 
@@ -82,6 +86,7 @@ const SignInScreen = ({ navigation }) => {
                             secureTextEntry={true}
                             onChangeText={(text) => setPassword(text.trim())}
                             value={password}
+                            onSubmitEditing={signIn}
                         />
                         <ForgottenPassword onPress={() => navigation.navigate('ForgotPassword')}>
                             <Text small center>
@@ -146,12 +151,10 @@ export default SignInScreen
 const LogoContainer = styled.View`
     align-items: center;
     justify-content: center;
-    margin : 30px;
+    margin : 20px;
 `;
 
 const Logo = styled.Image`
-    width : 200px;
-    height: 200px;
 `;
 
 const Auth = styled.View`

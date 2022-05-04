@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Modal, SafeAreaView } from 'react-native'
+import { Modal, SafeAreaView, View } from 'react-native'
 import styled from 'styled-components'
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import moment from 'moment';
@@ -9,10 +9,10 @@ import { Card, CardItem, Content } from 'native-base';
 import { FirebaseContext } from '../context/FireBaseContext';
 import { UserContext } from '../context/UserContext';
 import Creneau from '../components/reservations/Creneau';
-import { ROUGE, VERT, JAUNE } from '../components/Color'
+import { ROUGE, VERT, JAUNE, BLEU } from '../components/Color'
 import { MINHOUR, MAXHOUR, LIMITE_RESERVATION_PAR_DAY, MIN_DAYS_RESERVATION, MAX_DAYS_RESERVATION } from '../config/parameters'
 import Text from '../components/Text'
-import { TERRAINS } from '../config/parameters'
+import Adhesion from '../components/reservations/Adhesion';
 
 import firebase from 'firebase'
 import 'firebase/firestore'
@@ -23,16 +23,17 @@ const ReservationScreen = () => {
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
-    const [selectedField, setSelectedField] = useState("Terrain 1");
     const [reservations, setReservations] = useState();
-    const [reservationsParField, setReservationsParField] = useState();
     const [loading, setLoading] = useState(false);
     const [creneaux, setCreneaux] = useState([]);
     const [onReservation, setOnReservation] = useState([]);
     const [limiteReservationParDay, setLimiteReservationParDay] = useState();
-    const [blocages, setBlocages] = useState([]);
-    const [blocked, setBlocked] = useState([]);
     const [reservationsCounterListener, setReservationsCounterListener] = useState()
+    const [events, setEvents] = useState([]);
+    const [cadenas, setCadenas] = useState({})
+    const [message, setMessage] = useState({})
+    const [cadenasListener, setCadenasListener] = useState()
+    const [messageListener, setMessageListener] = useState()
 
     const [user, setUser] = useContext(UserContext);
     const firebase = useContext(FirebaseContext);
@@ -51,46 +52,33 @@ const ReservationScreen = () => {
         }
     }, [selectedDate])
 
-    //Récupération des blocages au changement de date
+    //MAJ temps réel si qqun modifie le code du cadenas
     useEffect(() => {
-        const getBlocage = async () => {
-            if (selectedDate) {
-                setBlocages(await firebase.getBlocage(selectedDate))
-            }
+        const unscubscribeCadenas = db.collection('security')
+            .doc('cadenas')
+            .onSnapshot((snapshot) => {
+                if (snapshot.exists)
+                    setCadenasListener(snapshot.data())
+            })
+
+        return () => {
+            unscubscribeCadenas()
         }
+    }, [])
 
-        getBlocage()
-    }, [selectedDate])
-
-    //Mise à jour du blocage en cas de changement
+    //MAJ temps réel si qqun modifie le message
     useEffect(() => {
-        setBlocked(false)
+        const unscubscribeMessage = db.collection('security')
+            .doc('message')
+            .onSnapshot((snapshot) => {
+                if (snapshot.exists)
+                    setMessageListener(snapshot.data())
+            })
 
-        if (blocages)
-            blocages.map(
-                (blocage, index) => {
-                    switch (selectedField) {
-                        case TERRAINS[0]:
-                            if (blocage.terrain1)
-                                setBlocked(true)
-                            break;
-
-                        case TERRAINS[1]:
-                            if (blocage.terrain2)
-                                setBlocked(true)
-                            break;
-
-                        case TERRAINS[2]:
-                            if (blocage.terrain3)
-                                setBlocked(true)
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            )
-    }, [selectedField, blocages])
+        return () => {
+            unscubscribeMessage()
+        }
+    }, [])
 
     //Compte du nombre de réservations
     useEffect(() => {
@@ -104,41 +92,50 @@ const ReservationScreen = () => {
 
     }, [reservations])
 
-    //Lors d'un changement de date : Récupération des réservations
+    //Lors d'un changement de date, lors d'une réservation de l'utilisateur ou lors d'une réservation d'un autre utilisateur : Récupération des réservations et MAJ des évènements
     useEffect(() => {
-
         const getReservationsOfTheDay = async () => {
             setLoading(true)
             setReservations(await firebase.getReservations(selectedDate))
             setLoading(false)
         }
 
+
         getReservationsOfTheDay()
+
     }, [selectedDate, onReservation, reservationsCounterListener])
 
-    //Quand changement de réservations : Filtre des résas en fonction du terrain
-    useEffect(() => {
 
-        if (reservations) {
-            setReservationsParField(reservations.filter(element => element.terrain == selectedField))
-        }
-        else {
-            setReservationsParField()
+    useEffect(() => {
+        const getEvents = async () => {
+            setEvents(await firebase.getEvents());
         }
 
-    }, [reservations])
+        getEvents();
+    }, [])
 
-    //Lors d'un changement de terrain : filtre des réservations par terrain
+    //Récupération du code du cadenas
     useEffect(() => {
+        const getCadenas = async () => {
+            setCadenas(await firebase.getCadenas());
+        }
 
-        if (reservations)
-            setReservationsParField(reservations.filter(element => element.terrain == selectedField))
-    }, [selectedField])
+        getCadenas();
+    }, [cadenasListener])
+
+    //Récupération du message
+    useEffect(() => {
+        const getMessage = async () => {
+            setMessage(await firebase.getMessage());
+        }
+
+        getMessage();
+    }, [messageListener])
 
     //Création/MAJ des créneaux : chgmnt de terrain ou les réservations ont étaient modifiées
     useEffect(() => {
 
-        if (reservationsParField) {
+        if (reservations) {
             setCreneaux([])
             for (let hour = MINHOUR; hour <= MAXHOUR; hour++) {
                 const creneau = < Creneau
@@ -147,8 +144,7 @@ const ReservationScreen = () => {
                     onReservePress={onReservePress}
                     onDeletePress={onDeletePress}
                     limiteReservationParDay={limiteReservationParDay}
-                    reservationsParHourParField={reservationsParField.filter(element => element.heure == hour)}
-                    blocked={blocked}
+                    reservationsParHour={reservations.filter(element => element.heure == hour)}
                 />
                 setCreneaux(prevState => [...prevState, creneau])
             }
@@ -161,13 +157,12 @@ const ReservationScreen = () => {
                     hour={hour}
                     onReservePress={onReservePress}
                     onDeletePress={onDeletePress}
-                    reservationsParHourParField={[]}
-                    blocked={blocked}
+                    reservationsParHour={[]}
                 />
                 setCreneaux(prevState => [...prevState, creneau])
             }
         }
-    }, [reservationsParField, selectedField, blocked])
+    }, [reservations])
 
     //Lors d'un appui sur une date du calendrier
     const onDayPress = dateSelected => {
@@ -177,14 +172,10 @@ const ReservationScreen = () => {
         setLoading(false);
     };
 
-    //Lors d'un appui sur un Terrain, on change le terrain sélectionné
-    const onFieldPress = (field) => {
-        setSelectedField(field);
-    }
-
     //Lors d'un appui pour réserver, on stock en BDD la réservation
-    const onReservePress = async (hour) => {
-        const successOnCreateReservation = await firebase.setReservation(selectedDate, hour, selectedField, user.username, user.uid, user.profilePhotoUrl, user.level);
+    const onReservePress = async (hour, selectedField) => {
+
+        const successOnCreateReservation = await firebase.setReservation(selectedDate, hour, selectedField, user.username, user.uid, user.profilePhotoUrl, user.level, user.stars, user.title, user.champion);
 
         //Vérification : Si OK on va récupérer les résas pour rafraichir l'écran.
         if (!successOnCreateReservation)
@@ -193,9 +184,9 @@ const ReservationScreen = () => {
             setOnReservation(!onReservation)
     }
 
-    //Lors d'un appui pour supprimé, on détruit la réservation en BDD
+    // Lors d'un appui pour supprimé, on détruit la réservation en BDD
     const onDeletePress = async (hour) => {
-        const successOnDeleteReservation = await firebase.deleteReservation(selectedDate, hour, selectedField, user.username)
+        const successOnDeleteReservation = await firebase.deleteReservation(selectedDate, hour, user.username)
         if (!successOnDeleteReservation)
             alert("Problème lors de la suppression de la réservation")
         else
@@ -215,42 +206,37 @@ const ReservationScreen = () => {
                                     </LogoContainer>
                                     <ButtonContainer>
                                         <ButtonDate onPress={() => showCalendar ? setShowCalendar(false) : setShowCalendar(true)}>
-                                        {/* <Yesterday>
-                                        <AntDesign name="caretleft" size={34} color="black" />
-                                        </Yesterday> */}
                                             {selectedDate ?
                                                 selectedDate === moment().format("YYYY-MM-DD") ?
                                                     <Text title >Aujourd'hui</Text>
                                                     : <Text title>{selectedDate.substr(8, 2)}/{selectedDate.substr(5, 2)}/{selectedDate.substr(0, 4)}</Text>
                                                 : null
                                             }
-                                            {/* <Tomorrow>
-                                            <AntDesign name="caretright" size={34} color="black" />
-                                            </Tomorrow> */}
                                         </ButtonDate>
                                     </ButtonContainer>
                                 </TopHeader>
-                                <BottomHeader>
-                                    <FieldsContainer>
-                                        {
-                                            TERRAINS.map(terrain => {
-                                                return (
-                                                    <Field
-                                                        color={selectedField === terrain ? VERT : JAUNE}
-                                                        onPress={() => onFieldPress(terrain)}
-                                                        disabled={selectedField === terrain || loading}
-                                                        key={terrain}
-                                                    >
-                                                        <Text color={selectedField === terrain ? "white" : null} medium>{terrain}</Text>
-                                                    </Field>
-                                                )
-                                            })
-                                        }
-                                    </FieldsContainer>
-                                </BottomHeader>
+                                {message && <Text center medium style={{marginBottom: 10, marginTop:10}} heavy>{`${message.libelle}`}</Text>
+
+                                }
                                 {
                                     limiteReservationParDay && <Text center large color={ROUGE}>Limite de réservations du jour atteinte</Text>
                                 }
+                                {
+                                    reservations &&
+                                    reservations.filter(reservation => reservation.joueurId === user.uid).length > 0 &&
+                                    <Text center large >{`Code cadenas : ${cadenas.code}`}</Text>
+                                }
+                                {events &&
+                                    events.map(event => {
+                                        if (event.date == selectedDate)
+                                            return (<View key={event.id}>
+                                                <Text center large>{event.titre}</Text>
+                                            </View>
+                                            )
+                                    })
+                                }
+
+
                             </MainHeader>
 
                             {
@@ -262,11 +248,7 @@ const ReservationScreen = () => {
                             }
                         </>
                         :
-                        <Card>
-                            <CardItem>
-                                <Text medium>{`Veuillez vous rapprocher d'un administrateur de l'application afin de valider l'inscription\n\nSeul les membres validés par un administrateur peuvent réserver des terrains `}</Text>
-                            </CardItem>
-                        </Card>
+                        <Adhesion />
                 }
             </Content>
 
@@ -377,27 +359,6 @@ const ButtonDate = styled.TouchableOpacity`
     flex-direction: row;
 `;
 
-const BottomHeader = styled.View`
-    flex: 1;
-    padding-top: 10px;
-    align-items: center;
-`;
-
-const FieldsContainer = styled.View`
-    flex-direction: row;
-    justify-content: space-evenly;
-`;
-
-const Field = styled.TouchableOpacity`
-    background-color: ${props => props.color || "#FAC01C"}; 
-    flex: 1;
-    margin-left: 5px;
-    margin-right: 5px;
-    border-radius: 25px;
-    align-items: center;
-    justify-content: center;
-    height: 50px;
-`;
 
 const BodyContainer = styled.ScrollView`
     flex:3;

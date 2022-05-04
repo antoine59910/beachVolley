@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Text from '../components/Text'
 import { JAUNE } from '../components/Color'
@@ -32,11 +31,27 @@ const Administrator = ({ navigation }) => {
 
                     </Text>
                     </Button>
-                    <Button onPress={() => navigation.navigate('fieldsManagment')}>
+                    {/* <Button onPress={() => navigation.navigate('notificationsManagment')}>
+                        <Text title >
+                            {"   "}
+                            <Ionicons name="notifications" size={40} color="black" />
+                            {"   "}notifications
+
+                    </Text>
+                    </Button> */}
+                    {/* <Button onPress={() => navigation.navigate('fieldsManagment')}>
                         <Text title >
                             {"   "}
                             <MaterialCommunityIcons name="soccer-field" size={40} color="black" />
                             {"   "}terrains
+
+                    </Text>
+                    </Button> */}
+                    <Button onPress={() => navigation.navigate('security')}>
+                        <Text title >
+                            {"   "}
+                            <Ionicons name="shield" size={40} color="black" />
+                            {"   "}Sécurité
 
                     </Text>
                     </Button>

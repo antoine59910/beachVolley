@@ -6,6 +6,8 @@ import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/firestore'
 
+import { TERRAINS } from '../config/parameters'
+
 
 const FirebaseContext = createContext()
 
@@ -36,6 +38,7 @@ const Firebase = {
                 level: user.level,
                 profilePhotoUrl,
                 uid,
+                stars:0,
             })
             if (user.profilePhoto) {
                 profilePhotoUrl = await Firebase.uploadProfilePhoto(user.profilePhoto)
@@ -61,7 +64,6 @@ const Firebase = {
     },
 
     updateUser: async (user) => {
-
         try {
             let profilePhotoUrl = user.profilePhotoUrl
 
@@ -157,6 +159,52 @@ const Firebase = {
         }
     },
 
+    deleteUser: async (userId) => {
+        try {
+            await db.collection(`users`)
+                .doc(userId)
+                .delete()
+
+        } catch (error) {
+            console.log("Error @deleteUser : ", error)
+            return false;
+        }
+        return true;
+    },
+
+    deleteReservation: async (date, hour, player) => {
+        TERRAINS.map(async element => {
+            try {
+                await db.collection(`reservations`)
+                    .doc(`${date} - ${hour}h00 - ${element} - ${player}`)
+                    .delete()
+            } catch (error) {
+                console.log("Error @deleteReservation : ", error)
+                return false;
+            }
+        })
+
+        try {
+            await db.collection(`compteur-reservations`)
+                .doc(`${date}`)
+                .get()
+                .then(documentSnapshot => {
+                    //décrement compteur
+                    if (documentSnapshot.exists) {
+                        db.collection(`compteur-reservations`)
+                            .doc(`${date}`)
+                            .update({ nombreReservations: documentSnapshot.data().nombreReservations - 1 })
+                    }
+                })
+
+        } catch (error) {
+            console.log("Error @deleteReservationcompteur : ", error)
+            return false;
+        }
+
+        return true;
+    },
+
     logOut: async () => {
         try {
             await firebase.auth().signOut();
@@ -172,7 +220,7 @@ const Firebase = {
         return firebase.auth().signInWithEmailAndPassword(email, password);
     },
 
-    setReservation: async (date, hour, field, player, userId, userProfilePhotoUrl, userLevel) => {
+    setReservation: async (date, hour, field, player, userId, userProfilePhotoUrl, userLevel, userStars, userTitle, userChampion) => {
         /*
             On s'inscrit puis on incrémente le compteur d'inscription du jour
         */
@@ -187,6 +235,9 @@ const Firebase = {
             profilePhotoUrl: `${userProfilePhotoUrl}`,
             niveau: userLevel,
             dateAuMomentDeLaReservation: reservationTime,
+            stars: userStars,
+            title: userTitle,
+            champion: userChampion,
         }
 
         //Inscription
@@ -251,15 +302,18 @@ const Firebase = {
 
     },
 
-    deleteReservation: async (date, hour, field, player) => {
-        try {
-            await db.collection(`reservations`)
-                .doc(`${date} - ${hour}h00 - ${field} - ${player}`)
-                .delete()
-        } catch (error) {
-            console.log("Error @deleteReservation : ", error)
-            return false;
-        }
+    deleteReservation: async (date, hour, player) => {
+        TERRAINS.map(async element => {
+            try {
+                await db.collection(`reservations`)
+                    .doc(`${date} - ${hour}h00 - ${element} - ${player}`)
+                    .delete()
+            } catch (error) {
+                console.log("Error @deleteReservation : ", error)
+                return false;
+            }
+        })
+
         try {
             await db.collection(`compteur-reservations`)
                 .doc(`${date}`)
@@ -296,7 +350,7 @@ const Firebase = {
         return true;
     },
 
-    setEvent: async (titre, description, date, joueurParEquipe, maxEquipes, id) => {
+    setEvent: async (titre, description, date, joueurParEquipe, maxEquipes, selectedPicture, id ) => {
         const modification = !!id;
 
         const eventId = id || uid()
@@ -308,6 +362,7 @@ const Firebase = {
             joueurParEquipe,
             maxEquipes,
             nbEquipesInscrites: 0,
+            selectedPicture
         }
 
         const eventModification = {
@@ -317,6 +372,7 @@ const Firebase = {
             date,
             joueurParEquipe,
             maxEquipes,
+            selectedPicture
         }
 
         if (modification) {
@@ -375,7 +431,7 @@ const Firebase = {
             console.log('Error @getEvents : ', error)
         }
     },
-    
+
     deleteEvent: async (id) => {
 
         try {
@@ -556,6 +612,63 @@ const Firebase = {
         }
         return true;
     },
+
+    getCadenas: async () => {
+        
+        try {
+            
+            const cadenas = await db.collection("security").doc("cadenas").get();
+            if (cadenas.exists) {
+                return cadenas.data();
+            }
+
+        } catch (error) {
+            console.log('Error @getCadenas : ', error)
+        }
+    },
+
+    updateCadenas: async(newCode) => {
+
+        const newCadenas = {
+            code: newCode,
+            date_changement: moment().format('DD-MM-YYYY')
+        }
+        try {
+            await db.collection('security').doc('cadenas').update(newCadenas);
+        } catch (error) {
+            console.log("Error @setCadenas : ", error)
+            return false;
+        }
+    },
+
+    getMessage: async () => {
+        
+        try {
+            
+            const message = await db.collection("security").doc("message").get();
+            if (message.exists) {
+                return message.data();
+            }
+
+        } catch (error) {
+            console.log('Error @getMessage : ', error)
+        }
+    },
+
+    updateMessage: async(newLibelle) => {
+
+        const newMessage = {
+            libelle: newLibelle,
+            date_changement: moment().format('DD-MM-YYYY')
+        }
+        try {
+            await db.collection('security').doc('message').update(newMessage);
+        } catch (error) {
+            console.log("Error @setMessage : ", error)
+            return false;
+        }
+    },
+
 }
 
 const FirebaseProvider = (props) => {

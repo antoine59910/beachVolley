@@ -30,19 +30,6 @@ const SignUpScreen = () => {
         setLevel(user.level)
     }, [])
 
-    useEffect(() => {
-        setUser(prevState => ({ ...prevState, level }))
-    }, [level])
-
-    useEffect(() => {
-        setUser(prevState => ({ ...prevState, profilePhoto }))
-    }, [profilePhoto])
-
-    useEffect(() => {
-        setUser(prevState => ({ ...prevState, username }))
-    }, [username])
-
-
     const getPermission = async () => {
         if (Platform.OS !== "web") {
             const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -84,7 +71,7 @@ const SignUpScreen = () => {
         setLoading(true)
 
         try {
-            const updatedUser = await firebase.updateUser(user)
+            const updatedUser = await firebase.updateUser({...user, username, profilePhoto, level})
             if (updatedUser) {
                 setUser(updatedUser)
                 navigation.goBack();
@@ -142,7 +129,7 @@ const SignUpScreen = () => {
                                 autoCompleteType="password"
                                 autoCorrect={false}
                                 secureTextEntry={true}
-                                value={user.email}
+                                value="123456789"
                                 editable={false}
                             />
                         </AuthContainer>
@@ -155,7 +142,7 @@ const SignUpScreen = () => {
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 autofocus={true}
-                                onChangeText={(username) => setUsername(username.trim())}
+                                onChangeText={(username) => setUsername(username)}
                                 value={username}
                             />
                         </AuthContainer>
@@ -166,8 +153,14 @@ const SignUpScreen = () => {
                                     <Text><Ionicons name="information-circle-outline" size={24} color="black" />{` Niveau`}</Text>
                                 </AuthTitle>
                             </InformationTouchableOpacity>
-
-                            <Form>
+                            <AuthField
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                autofocus={true}
+                                value={level}
+                                editable={false}
+                            />
+                            {/* <Form>
                                 <Item picker>
                                     <Picker
                                         mode="dropdown"
@@ -185,7 +178,7 @@ const SignUpScreen = () => {
                                         <Picker.Item label="Expert" value="expert" />
                                     </Picker>
                                 </Item>
-                            </Form>
+                            </Form> */}
                         </AuthContainer>
                     </Auth>
                     <SignUpContainer onPress={modifyProfile} disabled={loading}>

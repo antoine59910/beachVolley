@@ -94,16 +94,28 @@ const EventInscriptionScreen = ({ route }) => {
                     <CloseModal onPress={() => navigation.navigate("events")}>
                         <AntDesign name="closecircle" size={40} color="black" />
                     </CloseModal>
-                    <Photo
-                        source={require("../../assets/eventPictureResized.jpg")}
-                    />
+                    {
+                                    event.selectedPicture === "Tournoi" ?
+                                        <Photo
+                                            source={require("../../assets/tournamentDetail.jpg")}
+                                        />
+                                        :
+                                        event.selectedPicture === "Entrainement" ?
+                                            <Photo
+                                                source={require("../../assets/training.jpg")}
+                                            />
+                                            :
+                                            <Photo
+                                                source={require("../../assets/eventPicture.jpg")}
+                                            />
+                                }
                 </PhotoContainer>
                 <BodyContainer>
                     <Content padder>
                         <TitleContainer>
-                            <Text title center bold color="white">{titre}</Text>
-                            <Text medium center color="white">{`${date.substr(8, 2)}/${date.substr(5, 2)}/${date.substr(0, 4)}`}</Text>
-                            <Text medium center color="white">Inscriptions {nbEquipesInscrites} / {maxEquipes}</Text>
+                            <Text title center bold>{titre}</Text>
+                            <Text medium center >{`${date.substr(8, 2)}/${date.substr(5, 2)}/${date.substr(0, 4)}`}</Text>
+                            <Text medium center >Inscriptions {nbEquipesInscrites} / {maxEquipes}</Text>
                         </TitleContainer>
 
                         <Description>
@@ -133,6 +145,9 @@ const EventInscriptionScreen = ({ route }) => {
                                                     {
                                                         inscription &&
                                                         inscription.equipe.map((joueur, index) =>
+                                                            joueur.length > 12 ?
+                                                            <Text key={index} title>{joueur.substr(0,12)}...</Text>
+                                                            :
                                                             <Text key={index} title>{joueur}</Text>
                                                         )
                                                     }
@@ -216,13 +231,14 @@ const BodyContainer = styled.View`
  `;
 
 const TitleContainer = styled.View`
-    background-color : ${JAUNE}
     border-radius: 40px;
     width:75%;
     padding: 10px;
     margin:auto;
     margin-bottom: 30px;
     margin-top: 20px;
+    border-width: 3px;
+    border-color: ${JAUNE}
 `;
 
 const Description = styled.View`
